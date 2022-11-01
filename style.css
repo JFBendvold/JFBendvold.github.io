@@ -1,0 +1,77 @@
+html, * {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: arial;
+  background-color: rgb(36, 36, 36);
+}
+
+.container {
+  width: 60vw;
+  height: 750px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.container div {
+  flex-grow: 0.25;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255, 255, 255, 0);
+  font-size: 0px;
+  text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+  opacity: 0.5;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.27, 0.97) 0s;
+}
+
+.a {
+  background-image: url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1574&q=80");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+.b {
+  background-image: url("https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+.c {
+  background-image: url("https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+.d {
+  background-image: url("https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+.container:hover div {
+  flex-grow: 0.1;
+  opacity: 0.5;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.27, 0.97) 0s;
+}
+
+.container div:hover {
+  flex-grow: 1;
+  opacity: 1;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.27, 0.97) 0s;
+  font-size: 72px;
+  color: rgba(255, 255, 255, 255);
+}
