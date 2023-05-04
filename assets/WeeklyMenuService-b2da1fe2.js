@@ -1,0 +1,1 @@
+import{ah as r}from"./index-689421b9.js";const t=r("weeklymenu");async function s(e){try{return await t.get("/"+e)}catch{throw new Error("Kunne ikke finne ukesmenyen tilhørende kjøleskapet med ID: "+e)}}export{s as f};
