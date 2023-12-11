@@ -1,0 +1,173 @@
+.main {
+    min-height: 100vh;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 6rem;
+}
+
+.content {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.section {
+    width: 80%;
+    max-width: 1000px;
+    margin: 1rem auto;
+    /*background-color: #fff;*/
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.joinGameContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    background: url('/img/bg2.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.joinGameContainer .title {
+    font-size: 2rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}
+
+.section .button {
+    width: 200px;
+    height: 50px;
+    border: #fff 2px solid;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.section .button:hover {
+    border: #FF70A6 2px solid;
+    color: #FF70A6;
+}
+
+.joinGameContainer .topLeft {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.joinGameContainer .topLeft .topLeftText {
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}
+
+.joinGameContainer .topLeft .topLeftText::before {
+    content: '';
+    height: 8px;
+    width: 8px;
+    background-color: #E9FF70;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+    animation: blink 1s infinite ease-in-out;
+}
+
+.section .smallContainer {
+    width: 48%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.section .smallContainer .title {
+    font-size: 2rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}
+
+.feedbackContainer {
+    width: 100%;
+    height: 125px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url('/img/bg7.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.feedbackContainer .title {
+    font-size: 2rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .section {
+        flex-direction: column;
+    }
+
+    .section .smallContainer {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}

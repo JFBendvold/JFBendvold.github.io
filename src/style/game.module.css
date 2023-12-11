@@ -1,0 +1,9 @@
+.main {
+    opacity: 1;
+    transition: opacity 0.25s ease-in-out;
+    overflow-y: hidden;
+}
+
+.disappear {
+    opacity: 0;
+}

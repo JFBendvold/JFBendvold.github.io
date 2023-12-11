@@ -1,0 +1,100 @@
+image: node:16-buster
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - build/
+
+stages:
+  - install
+  - build
+  - test
+
+.setup_ssh: &setup_ssh
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PK" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.stud.idi.ntnu.no >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+install_dependencies:
+  stage: install
+  script:
+    - npm ci
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+    policy: push
+
+build_project:
+  stage: build
+  script:
+    - npm ci
+    - npm run build
+  dependencies:
+    - install_dependencies
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+    policy: pull
+  artifacts:
+    name: 'Build project ${CI_COMMIT_REF_NAME}-${CI_JOB_ID}'
+    paths:
+      - build/
+    expire_in: 1 day
+
+component_test:
+  stage: test
+  image: cypress/base:16.17.1
+  script:
+    - npm ci
+    - npm install cypress
+    - npm run cy:comp > temp.log
+    - sed 's/\x1b\[[0-9;]*m//g' temp.log > cypress-comp.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+    policy: pull
+  artifacts:
+    name: 'Component report ${CI_COMMIT_REF_NAME}-${CI_JOB_ID}'
+    paths:
+      - cypress-comp.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+
+e2e_headless:
+  stage: test
+  only: 
+    - main
+  image: cypress/base:16.17.1
+  script:
+    - apt-get update -y
+    - apt-get install -y git
+    - npm ci
+    - npm install cypress
+    - git clone git@gitlab.stud.idi.ntnu.no:triotech/idatt-2501-backend.git backend
+    - cd backend
+    - npm install
+    - npm start &
+    - sleep 15
+    - cd ..
+    - npm run dev &
+    - sleep 5
+    - xvfb-run --server-args="-screen 0 1024x768x24" npm run cy:headless > temp.log
+    - sed 's/\x1b\[[0-9;]*m//g' temp.log > cypress-e2e.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+    - sleep 10
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  artifacts:
+    name: 'Cypress run ${CI_COMMIT_REF_NAME}-${CI_JOB_ID}'
+    paths:
+      - cypress-e2e.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+    expire_in: 1 day
+  <<: *setup_ssh
