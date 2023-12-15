@@ -1,0 +1,33 @@
+{
+  "name": "tokentrivia",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:comp": "cypress run --component",
+    "cy:headless": "cypress run --headless --browser electron"
+  },
+  "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.1.0",
+    "antd": "^5.10.1",
+    "axios": "^1.5.1",
+    "next": "latest",
+    "react": "latest",
+    "react-confetti": "^6.1.0",
+    "react-dom": "latest",
+    "react-rewards": "^2.0.4",
+    "react-select": "^5.7.7",
+    "react-tooltip": "^5.21.5",
+    "socket.io-client": "^4.7.2",
+    "web3": "^4.1.2"
+  },
+  "devDependencies": {
+    "cypress": "^13.3.0"
+  }
+}

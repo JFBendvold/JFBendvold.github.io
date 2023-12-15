@@ -1,0 +1,40 @@
+.title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    font-family: 'Monofett', monospace;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    height: 110px;
+  }
+  
+  .title h1 {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    transition: all 0.2s ease-in-out;
+    cursor: default;
+  }
+  
+  .title h1:hover {
+    padding-top: 0.5rem;
+  }
+
+@media screen and (max-width: 768px) {
+    .title {
+      font-size: 32px;
+      height: 60px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .title {
+      font-size: 24px;
+      height: 60px;
+    }
+
+    .title h1 {
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+}

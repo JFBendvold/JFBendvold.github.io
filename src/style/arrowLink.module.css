@@ -1,0 +1,24 @@
+.arrowLink {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+.arrowicon {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+}
+
+.arrowicon span {
+    font-size: 48px;
+    color: #fff;
+    cursor: pointer;
+    font-variation-settings: 'wght' 400;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease-in-out;
+}
+
+.arrowicon span:hover {
+    font-variation-settings: 'wght' 700;
+}

@@ -1,0 +1,64 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 6rem;
+  min-height: 100vh;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.subtitle h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem;
+}
+
+.content a {
+  text-decoration: none;
+  margin: 1rem;
+}
+
+.content .button {
+  border: none;
+  background: transparent;
+  color: #fff;
+  border: #fff 2px solid;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  width: 350px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content button img {
+  width: 24px;
+  height: 24px;
+  margin-left: 0.4rem;
+}
+
+.content .button:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
