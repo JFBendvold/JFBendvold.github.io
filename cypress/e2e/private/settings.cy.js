@@ -54,7 +54,7 @@ describe('functionality for the settings page', () => {
       cy.visit('http://localhost:3000/settings')
     })  
 
-    it('changes the user profile when the button is pressed', () => {
+    it('changes the user profile avatar when the button is pressed', () => {
         cy.intercept({
             method: 'PUT',
             url: '**/changeAvatar',

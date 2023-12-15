@@ -46,9 +46,6 @@ export default function SecuritySettings(user) {
         })
     }, []);
 
-    useEffect(() => {
-        console.log(user.user.name);
-    }, []);
 
     async function changePassword() {   
         try {

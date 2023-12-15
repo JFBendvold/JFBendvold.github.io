@@ -13,10 +13,10 @@ export default function RewardsSettings(user) {
     useEffect(() => {
         // Get referral code
         getReferralCode().then((response) => {
-            if (response.status == 200) {
+            if (response?.status == 200) {
                 setReferralCode(response.data);
             }
-            else if (response.status == 404) {
+            else if (response?.status == 404) {
                 setReferralCode(null);
             }
             else {

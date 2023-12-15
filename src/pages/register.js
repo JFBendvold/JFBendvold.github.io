@@ -13,6 +13,7 @@ import LoadingScreen from '@/components/LoadingScreen'
 import { useRouter } from 'next/router'
 import { getTokens } from '@/utils/Web3Connection.js';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications.js';
+import PublicWrapper from '@/components/hocs/PublicWrapper'
 
 export default function Register() {
     const [username, setUsername] = useState('')
@@ -24,13 +25,13 @@ export default function Register() {
     const [country, setCountry] = useState('')
     const [fingerPrint, setFingerPrint] = useState('') //Fingerprint for device
     const [error, setError] = useState('') //Error message
-    const mainRef = useRef(null)
     const router = useRouter()
+    const [isMounted, setIsMounted] = useState(false);
 
     const [storedUser, setStoredUser] = useState(null);
 
     useEffect(() => {
-        const initialUser = localStorage.getItem('user'); //TODO: move to util
+        const initialUser = localStorage.getItem('user'); 
         if (initialUser) {
             setStoredUser(JSON.parse(initialUser));
             console.log("Initial stored user:", JSON.parse(initialUser));
@@ -45,8 +46,6 @@ export default function Register() {
 
 
     useEffect(() => {
-        mainRef.current.style.opacity = 1;
-
         // Get list of countries
         fetch("https://valid.layercode.workers.dev/list/countries?format=select&flags=true&value=code")
         .then(response => response.json())
@@ -63,6 +62,7 @@ export default function Register() {
         }
 
         getFingerprint();
+        setIsMounted(true);
     }, [])
 
     //Submit form
@@ -77,8 +77,6 @@ export default function Register() {
                     password: password,
                     country: country.value,
                 });
-
-                console.log(response)
 
                 if (response.status === 200) {
                     // User created successfully
@@ -165,7 +163,7 @@ export default function Register() {
     }
 
     return (
-        <main className={styles.main} ref={mainRef}>
+        <PublicWrapper>
             <BouncyTitle title="Register" />
             <ArrowLink href="/" />
             <div className={styles.content}>
@@ -176,14 +174,14 @@ export default function Register() {
                         value={username}
                         onChange={event => setUsername(event.target.value)}
                     />
-                    <Select
+                    { isMounted && <Select
                         options={countries}
                         value={country}
                         onChange={setCountry}
                         placeholder="Country"
                         className={styles.select}
                         classNamePrefix="select"
-                    />
+                    />}
                     <input
                         type="text"
                         placeholder="Email"
@@ -213,13 +211,13 @@ export default function Register() {
                     </button>
                     <div className={styles.links}>
                         <Link href="/login">Login</Link>
-                        <Link href="/terms">Terms of Service</Link>
+                        <Link href="/cookies">Terms of Service</Link>
                     </div>
                     <p className={styles.error}>{error}</p>
                 </form>
             </div>
             <Cookie />
             <LoadingScreen />
-        </main>
+        </PublicWrapper>
     )
 }

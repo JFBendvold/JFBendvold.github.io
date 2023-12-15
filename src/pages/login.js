@@ -7,9 +7,9 @@ import { useState, useEffect, useRef } from 'react'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { loginUser } from '@/services/AuthService'  
 import { useRouter } from 'next/router'
-import { getTokens } from '@/utils/Web3Connection.js';
-import { openNotificationError, openNotificationInfo } from '@/utils/Notifications.js';
-import { enforceGuard } from "../utils/RouterGuard";
+import { getTokens } from '@/utils/Web3Connection.js'
+import { openNotificationError, openNotificationInfo } from '@/utils/Notifications.js'
+import PublicWrapper from '@/components/hocs/PublicWrapper'
 
 export default function Login() {
     const [username, setUsername] = useState('')
@@ -18,7 +18,6 @@ export default function Login() {
     const [error, setError] = useState('') //Error message
     const [code, setCode] = useState('') //Code for 2FA
     const [showCode, setShowCode] = useState(false) //Show 2FA input
-    const mainRef = useRef(null)
     const router = useRouter()
 
     const [userToStore, setUserToStore] = useState(null);
@@ -40,8 +39,6 @@ export default function Login() {
 
 
     useEffect(() => {
-        mainRef.current.style.opacity = 1;
-
         // Generate and set fingerprint
         async function getFingerprint() {
             const fp = await FingerprintJS.load();
@@ -58,15 +55,12 @@ export default function Login() {
         console.log(userToStore)
 
         if (validate()) { //If inputs are valid
-            console.log(username, password, fingerPrint)
             const response = await loginUser({
                 name: username,
                 password: password,
                 fingerprint: fingerPrint,
                 code: code
             })
-
-            console.log(response)
 
             if (response.status === 404 || response.status === 401) {
                 setError('Username or password is incorrect')
@@ -138,7 +132,7 @@ export default function Login() {
     }
 
     return (
-        <main className={styles.main} ref={mainRef}>
+        <PublicWrapper>
             <BouncyTitle title="Login" />
             <ArrowLink href="/" />
             <div className={styles.content}>
@@ -178,6 +172,6 @@ export default function Login() {
                 </form>
             </div>
             <Cookie />
-        </main>
+        </PublicWrapper>
     )
 }

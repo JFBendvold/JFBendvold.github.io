@@ -8,7 +8,7 @@ export const getAuthority = async () => {
         const response = await apiClient.get("/get");
         return response;
     } catch (error) {
-        return error.response;
+        return error.response; //TODO: should this be changed to just error
     }
 }
 

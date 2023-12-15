@@ -31,7 +31,7 @@ export default function Search(websocket) {
 
     useEffect(() => {
         setUser(JSON.parse(localStorage.getItem("user")));
-        setStyle(JSON.parse(localStorage.getItem("user")).style);
+        setStyle(JSON.parse(localStorage.getItem("user"))?.style);
 
         setWindowWidth(window.innerWidth)
         setWindowHeight(window.innerHeight)

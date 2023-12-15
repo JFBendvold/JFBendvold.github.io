@@ -10,6 +10,7 @@ stages:
   - install
   - build
   - test
+  - deploy
 
 .setup_ssh: &setup_ssh
   before_script:
@@ -19,6 +20,7 @@ stages:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan gitlab.stud.idi.ntnu.no >> ~/.ssh/known_hosts
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
 install_dependencies:
@@ -71,6 +73,7 @@ e2e_headless:
   stage: test
   only: 
     - main
+    - fix-e2e-in-pipeline-2
   image: cypress/base:16.17.1
   script:
     - apt-get update -y
@@ -86,7 +89,7 @@ e2e_headless:
     - npm run dev &
     - sleep 5
     - xvfb-run --server-args="-screen 0 1024x768x24" npm run cy:headless > temp.log
-    - sed 's/\x1b\[[0-9;]*m//g' temp.log > cypress-e2e.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+    - sed 's/\x1b\[[0-9;]*m//g' temp.log > cypress-e2e.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log TODO remove comments
     - sleep 10
   cache:
     key: ${CI_COMMIT_REF_SLUG}
@@ -98,3 +101,28 @@ e2e_headless:
       - cypress-e2e.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
     expire_in: 1 day
   <<: *setup_ssh
+
+deploy_to_github_pages: 
+  stage: deploy
+  script:
+    - git init
+    - git config user.name "JFBendvold"
+    - git config user.email "pusher@pipeline.com"
+    - BRANCH="temp-$(date +'%Y%m%d%H%M%S')"
+    - git checkout --orphan $BRANCH
+    - git add .
+    - git commit --allow-empty -m "Deploy commit ${CI_COMMIT_SHORT_SHA}. Created at $(date +'%Y-%m-%d %H:%M:%S')"
+    - git remote set-url origin https://JFBendvold:$GITHUB_TOKEN@github.com/JFBendvold/JFBendvold.github.io.git
+    - git push -u origin $BRANCH --force
+    - git checkout main
+    - git pull origin main
+    - git merge $BRANCH --allow-unrelated-histories
+    - git push origin main
+  dependencies:
+    - build_project
+  environment:
+    name: github-pages
+  only:
+    - implement-cd
+
+

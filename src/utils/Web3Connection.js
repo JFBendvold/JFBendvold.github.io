@@ -3,7 +3,7 @@ import { getUserId } from "../services/UserService.js";
 import ABI from "./ABI.json";
 
 const SEPOLIA_RPC_URL = "https://eth-sepolia.g.alchemy.com/v2/IA22Anj6b1Wd0KS5Lji_wZf4MwP3IQPP";
-const CONTRACT_ADDRESS = "0x221772ff3DB4396820f9D9700F5aAE35DD3FA80f";
+const CONTRACT_ADDRESS = "0x4c464b13E66071f852a115C5A0611f2585E21f88";
 
 // Get Tokens from the blockchain using the userId
 export async function getTokens() {
@@ -18,9 +18,6 @@ export async function getTokens() {
 
         // Get userId from database
         const userId = await getUserId();
-        console.log("UserId:", userId);
-        console.log(userId.data);
-
 
         // Get tokens from blockchain
         const tokensRaw = await contract.methods.getTokens(userId.data).call();

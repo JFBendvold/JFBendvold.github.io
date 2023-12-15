@@ -123,7 +123,7 @@ export default function WalletSettings(user) {
         }
 
         // Create contract instance
-        const contract = new web3Instance.eth.Contract(ABI, "0x221772ff3DB4396820f9D9700F5aAE35DD3FA80f"); // Assuming contractAddress is defined
+        const contract = new web3Instance.eth.Contract(ABI, "0x4c464b13E66071f852a115C5A0611f2585E21f88"); // Assuming contractAddress is defined
 
         // Deposit tokens
         showLoadingScreen();
@@ -134,7 +134,7 @@ export default function WalletSettings(user) {
 
         const txObject = {
             from: address,
-            to: "0x221772ff3DB4396820f9D9700F5aAE35DD3FA80f",
+            to: "0x4c464b13E66071f852a115C5A0611f2585E21f88",
             value: web3Instance.utils.toWei(ethAmount.toString(), "ether"),
             data: contract.methods.deposit(userId).encodeABI(),
             gas: 3000000,
@@ -201,10 +201,10 @@ export default function WalletSettings(user) {
         let userId = await getUserId();
         userId = userId.data;
 
-        const contract = new web3Instance.eth.Contract(ABI, "0x221772ff3DB4396820f9D9700F5aAE35DD3FA80f"); // Assuming contractAddress is defined
+        const contract = new web3Instance.eth.Contract(ABI, "0x4c464b13E66071f852a115C5A0611f2585E21f88"); // Assuming contractAddress is defined
         const txObject = {
             from: address,
-            to: "0x221772ff3DB4396820f9D9700F5aAE35DD3FA80f",
+            to: "0x4c464b13E66071f852a115C5A0611f2585E21f88",
             data: contract.methods.withdraw(userId, web3Instance.utils.toWei(ethAmount.toString(), "ether")).encodeABI(),
             gas: 3000000,
             value: 0,
@@ -312,7 +312,7 @@ export default function WalletSettings(user) {
                 </div>
             </div>
             <div className={styles.box}>
-                <Link href="https://sepolia.etherscan.io/address/0x221772ff3DB4396820f9D9700F5aAE35DD3FA80f" passHref>
+                <Link href="https://sepolia.etherscan.io/address/0x4c464b13E66071f852a115C5A0611f2585E21f88" passHref target="_blank">
                     <p className={styles.link}>View on Etherscan</p>
                 </Link>
             </div>

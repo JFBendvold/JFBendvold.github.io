@@ -10,7 +10,7 @@ export default function AdminSettings(user) {
     useEffect(() => {
         getAuthority().then((response) => {
             console.log(response.data);
-            if (response.data === "admin") {
+            if (response?.data === "admin") {
                 console.log("User is admin");
                 setAdmin(true);
             } else {

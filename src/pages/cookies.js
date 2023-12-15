@@ -57,6 +57,36 @@ export default function Cookie() {
                 <p>
                 In order to provide you with a great experience on this site, we provide the functionality to set your preferences for how this site runs when you use it. In order to remember your preferences, we need to set cookies so that this information can be called whenever you interact with a page affected by your preferences.
                 </p>
+
+
+                <h1>
+                    Terms and Conditions
+                </h1>
+
+                <p>These terms and conditions outline the basic rules and guidelines for the use of TokenTrivia's Website</p>
+                <p>By accessing this website, you are implicitly accepting the listd terms. </p>
+
+                <h2>Licensing</h2>
+                <p>All intellectual property rights are reserved, but feel free to reach out and request any material from the developers. TokenTrivia is primarily for your own personal use.</p>
+
+                <h2>Your Privacy</h2>
+                <p>We take your privacy concern with seriousness. Please read Cooky Policy for further info.</p>
+
+                <h2>Reservation of Rights</h2>
+                <p>We reserve the right to request that you remove all links or any particular link to our Website.</p>
+
+                <h2>Removal of links from our website</h2>
+                <p>If you find any link on our Website that is offensive for any reason, you are free to contact and inform us any moment by using the "Feedback"-section when logged in. We will consider requests to remove links but we are not obligated to or so or to respond to you directly. This function is reserved members.</p>
+
+                <h2>Refunds and Lost Blockchain transactions</h2>
+                <p>TokenTrivia is not responsible for any lost transactions. We do not offer refunds for any transactions.</p>
+
+                <h2>Disclaimer about Questions Displayed in Quizzes</h2>
+                <p>We do not ensure that the information on this website is updated or correct.</p>
+                <p>We will listen to feedback on questions, but the owners of the application have sole responsibility for the content of the questions.</p>
+
+                <p>We do not recommend gambling-addicts to use the site. For more info please call [12344 Placeholder Number]. For professional help, refer to [12345 Placeholder Number]</p>
+
             </div>
         </main>
     )
