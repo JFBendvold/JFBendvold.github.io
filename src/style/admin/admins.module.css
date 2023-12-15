@@ -1,0 +1,188 @@
+.main {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    animation: slidein 1s ease-in-out forwards;
+    padding-top: 6rem;
+    padding-bottom: 1rem;
+}
+
+@keyframes slidein {
+    0% {
+        transform: translateY(200vh);
+    }
+
+    70% {
+        transform: translateY(-5vh);
+    }
+
+    85% {
+        transform: translateY(2vh);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.content .title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.content .searchContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.content .searchContainer .searchInput {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 5px;
+    height: 48px;
+    border: 1px solid #fff;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.content .searchContainer .searchInput:focus {
+    outline: none;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.content .searchContainer .searchInput:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.content .searchContainer .searchButton {
+    border-radius: 5px;
+    border: 1px solid #fff;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    height: 48px;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.content .searchContainer .searchButton:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0);
+}
+
+.content .usersContainer {
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 1rem;
+}
+
+.content .usersContainer .userContainer {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.content .usersContainer .userContainer .user {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content .userContainer .user .userDetails {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.content .userContainer .user .userDetails img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #fff;
+    margin-right: 1rem;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.content .userContainer .user .userDetails .flag {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #fff;
+    margin-left: 0.2rem;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.content .userContainer .user .userButtons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.content .userContainer .user .userButtons .userButton {
+    border-radius: 5px;
+    border: 1px solid #fff;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font-size: 1rem;
+    padding: 0.5rem 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+    margin-left: 1rem;
+}
+
+.content .userContainer .user .userButtons .userButton:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0);
+}
+
+.content .userContainer .time {
+    font-size: 1rem;
+    text-align: right;
+}

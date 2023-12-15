@@ -1,0 +1,499 @@
+.container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container .intro {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeOut 2s ease-in-out forwards;
+    animation-delay: 9s;
+}
+
+.container .intro h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    animation: fadeIn 2s ease-in-out forwards;
+}
+
+.container .intro p {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    animation: fadeIn 2s ease-in-out forwards;
+    animation-delay: 2s;
+}
+
+.container .categories {
+    opacity: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 2s ease-in-out forwards 10s, fadeOut 2s ease-in-out forwards 20s;
+}
+
+.container .categories h2 {
+    opacity: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 2s ease-in-out forwards;
+    animation-delay: 10s;
+}
+
+.container .categories .categoryBoxes {
+    opacity: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 2s ease-in-out forwards;
+    animation-delay: 10s;
+}
+
+.container .categories .categoryBoxes .categoryBox {
+    opacity: 0.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 1rem;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    border: 2px solid #fff;
+}
+
+.container .categories .categoryBoxes .categoryBox p {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .categories .categoryBoxes .selectedCategory {
+    opacity: 0.5;
+    animation: selected 2s ease-in-out forwards;
+    animation-delay: 15s;
+}
+
+.container .end {
+    opacity: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 2s ease-in-out forwards 20s, fadeOut 2s ease-in-out forwards 28s;
+}
+
+.container .end h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    animation: fadeIn 2s ease-in-out forwards;
+    animation-delay: 20s;
+}
+
+.container .question {
+    opacity: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 2s ease-in-out forwards;
+}
+
+.container .question h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    animation: glitch 5s ease-in-out forwards;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+}
+
+.container .question .answers {
+    opacity: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    animation: fadeIn 2s ease-in-out forwards;
+    animation-delay: 4s;
+    width: 90%;
+    max-width: 600px;
+}
+
+.container .question .answers .answer {
+    position: relative;
+    opacity: 0.8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45%;
+    height: 50px;
+    margin: 0.5rem 0;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+    border: 2px solid #fff;
+    cursor: pointer;
+}
+
+.container .question .answers .answer:hover {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.container .question .answers .selectedAnswer {
+    opacity: 1;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 1);
+}
+
+.container .question .answers .answer p {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+}
+
+.container .question .answers span {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #fff;
+    font-size: 1.5rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    animation: fadeIn 0.2s ease-in-out forwards;
+}
+
+.container .question .answers .correctAnswer {
+    opacity: 1;
+    transition: all 1s ease-in-out;
+    color: #71ff71;
+    border: 2px solid rgb(113, 255, 113);
+    box-shadow: 0 0 10px rgba(113, 255, 113, 0.5);
+}
+
+.container .question .answers .wrongAnswer {
+    opacity: 1;
+    transition: all 1s ease-in-out;
+    color: #ff7171;
+    border: 2px solid rgb(255, 113, 113);
+    box-shadow: 0 0 10px rgba(255, 113, 113, 0.5);
+}
+
+.container .questionNumber {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    cursor: default;
+}
+
+.container .timerCircle {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+    margin: 1rem;
+    transition: all 1s ease-in-out;
+}
+
+.container .timerCircle .timerContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .waiting {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 2s ease-in-out forwards, fadeOut 2s ease-in-out forwards 8s;
+}
+
+.container .waiting h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .waiting h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .waiting .funFact {
+    position: fixed;
+    bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    cursor: default;
+}
+
+.container .waiting .funFact span {
+    margin: 0 0.5rem;
+    font-size: 1.5rem;
+}
+
+.container .lostContainer {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 5s ease-in-out forwards;
+}
+
+.container .lostContainer h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .lostContainer h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .lostContainer button {
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    border: 2px solid #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.container .lostContainer button:hover {
+    border: 2px solid #FF70A6;
+    box-shadow: 0 0 10px rgba(255, 112, 166, 0.5);
+}
+
+.container .lostContainer img {
+    width: 90%;
+    max-width: 600px;
+    margin-bottom: 1rem;
+    object-fit: contain;
+}
+
+.container .wonContainer {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 5s ease-in-out forwards;
+}
+
+.container .wonContainer h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.container .wonContainer h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+}
+
+.container .wonContainer button {
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    border: 2px solid #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.container .wonContainer button:hover {
+    border: 2px solid #FF70A6;
+    box-shadow: 0 0 10px rgba(255, 112, 166, 0.5);
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes selected {
+    0% {
+        opacity: 0.5;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+    }
+    10%, 80% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    20%, 85% {
+        opacity: 0.5;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+    }
+    22%, 87% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 1);
+    }
+    24%, 90% {
+        opacity: 0.5;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+    }
+    30%, 95% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+}
+
+@keyframes glitch {
+    0% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        transform: translateY(50px);
+    }
+    10%, 80% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        transform: translateY(50px);
+    }
+    20%, 85% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+    22%, 87% {
+        opacity: 1;
+    }
+    24%, 90% {
+        opacity: 1;
+    }
+    30%, 95% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        transform: translateY(0);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container .categories {
+        flex-direction: column;
+    }
+
+    .container .categories .categoryBoxes {
+        flex-direction: column;
+    }
+
+    .container .categories .categoryBoxes .categoryBox {
+        margin: 0.5rem 0;
+    }
+}

@@ -1,0 +1,82 @@
+.cookie {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+.cookieicon {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+}
+
+.cookieicon span {
+    font-size: 48px;
+    color: #fff;
+    cursor: pointer;
+    font-variation-settings: 'FILL' 1, 'wght' 400;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease-in-out;
+}
+
+.cookieicon span:hover {
+    font-variation-settings: 'FILL' 0, 'wght' 400;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 6rem;
+    min-height: 100vh;
+}
+
+.title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    font-family: 'Monofett', monospace;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    height: 110px;
+}
+  
+.title h1 {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    transition: all 0.2s ease-in-out;
+    cursor: default;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 6rem;
+    padding-top: 0;
+    min-height: 100vh;
+}
+
+.content h1 {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.content h2 {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.content p {
+    font-size: 14px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.content a {
+    text-decoration: underline;
+}
