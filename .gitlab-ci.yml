@@ -44,7 +44,7 @@ deploy_to_github_pages:
     script:
         - git init
         - git config user.name "JFBendvold"
-        - git config user.email "deploy@pipeline.com"
+        - git config user.email "deploy@ghpages.com"
         - BRANCH="lokal"
         - git checkout $BRANCH
         - git add .
@@ -56,5 +56,4 @@ deploy_to_github_pages:
     environment:
         name: github-pages
     only:
-        - implement-cd
         - deploy
