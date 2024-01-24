@@ -1,0 +1,35 @@
+.header {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+}
+
+.header a {
+    text-decoration: none;
+    color: #F7EDE2;
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.header a:hover {
+    text-decoration: underline;
+}
+
+.header .logo {
+    font-size: 2rem;
+}
+
+.header .logo:hover {
+    text-decoration: none;
+}
