@@ -46,7 +46,7 @@ deploy_to_github_pages:
         - git config user.name "JFBendvold"
         - git config user.email "deploy@ghpages.com"
         - BRANCH="lokal"
-        - git checkout -b $BRANCH
+        - git checkout $BRANCH
         - git add .
         - git commit --allow-empty -m "Deploy ${CI_COMMIT_SHORT_SHA}. Created $(date +'%Y-%m-%d %H:%M:%S')"
         - git remote set-url origin https://JFBendvold:$GITHUB_TOKEN@github.com/JFBendvold/JFBendvold.github.io.git
