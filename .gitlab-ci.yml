@@ -1,0 +1,60 @@
+image: ubuntu:latest
+
+cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+        - node_modules/
+        - build/
+
+stages:
+    - install
+    - build
+    - deploy
+
+install_dependencies:
+    stage: install
+    script:
+        - npm ci
+    cache:
+        key: ${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+        policy: push
+
+build_project:
+    stage: build
+    script:
+        - npm ci
+        - npm run build
+    dependencies:
+        - install_dependencies
+    cache:
+        key: ${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+        policy: pull
+    artifacts:
+        name: "Build ${CI_COMMIT_REF_NAME}-${CI_JOB_ID}"
+        paths:
+            - build/
+        expire_in: 1 day
+
+deploy_to_github_pages:
+    stage: deploy
+    script:
+        - git init
+        - git config user.name "JFBendvold"
+        - git config user.email "deploy@pipeline.com"
+        - BRANCH="lokal"
+        - git checkout $BRANCH
+        - git add .
+        - git commit --allow-empty -m "Deploy ${CI_COMMIT_SHORT_SHA}. Created $(date +'%Y-%m-%d %H:%M:%S')"
+        - git remote set-url origin https://JFBendvold:$GITHUB_TOKEN@github.com/JFBendvold/JFBendvold.github.io.git
+        - git push -u origin $BRANCH --force
+    dependencies:
+        - build_project
+    environment:
+        name: github-pages
+    only:
+        - implement-cd
+        - deploy
