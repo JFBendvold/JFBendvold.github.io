@@ -1,4 +1,4 @@
-image: node:16-buster
+image: node:latest
 
 cache:
     key: ${CI_COMMIT_REF_SLUG}
