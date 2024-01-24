@@ -4,7 +4,7 @@ cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
         - node_modules/
-        - build/
+        - out/
 
 stages:
     - install
@@ -36,7 +36,7 @@ build_project:
     artifacts:
         name: "Build ${CI_COMMIT_REF_NAME}-${CI_JOB_ID}"
         paths:
-            - build/
+            - out/
         expire_in: 1 day
 
 deploy_to_github_pages:

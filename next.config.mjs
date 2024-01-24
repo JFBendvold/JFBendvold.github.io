@@ -6,6 +6,7 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
+    basePath: 'https://jfbendvold.github.io/',
 
 };
 
