@@ -1,4 +1,4 @@
-image: ubuntu:latest
+image: node:16-buster
 
 cache:
     key: ${CI_COMMIT_REF_SLUG}
