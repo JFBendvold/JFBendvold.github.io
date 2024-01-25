@@ -1,0 +1,71 @@
+.main {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titleContainer {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0)), url("/img/title_bg2.jpg");
+    background-size: cover;
+    background-position: 50% 80%;
+    position: relative;
+}
+
+.textOverlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    align-self: flex-start;
+    max-width: 80%;
+    margin-left: 5%;
+    margin-top: 5%;
+}
+
+.textOverlay .description {
+    font-size: 3rem;
+    font-weight: 300;
+    color: #F7EDE2;
+    text-shadow: 0 0 1rem #1F1F1F;
+}
+
+.textOverlay .buttonRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    align-self: flex-start;
+}
+
+.textOverlay .buttonRow .button {
+    margin-right: 0.5rem;
+}
+
+.textOverlay .buttonRow .button img {
+    width: 8rem;
+    object-fit: contain;
+}
+
+.arrowButton {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin-bottom: 1rem;
+}
+
+.arrowButton span {
+    font-size: 4rem;
+    color: #F7EDE2;
+}
