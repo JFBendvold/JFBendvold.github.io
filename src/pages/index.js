@@ -21,7 +21,7 @@ export default function Home() {
           </div>
         </div>
         <button className={styles.arrowButton}>
-          <span class="material-symbols-outlined">
+          <span className="material-symbols-outlined">
             expand_more
           </span>
         </button>

@@ -13,13 +13,14 @@ export default function Home() {
             Kom i gang med å gjøre<br/>utsalget ditt mer tilgjengelig for kundene
           </p>
           <div className={styles.buttonRow}>
-            <Link href="/utselger/registrer" className={styles.textButton}>
+            <Link href="https://lfkszfufkkybbuqunqke.supabase.co/auth/v1/authorize?provider=google"
+            className={styles.textButton}>
               Registrer deg som utselger
             </Link>
           </div>
         </div>
         <button className={styles.arrowButton}>
-          <span class="material-symbols-outlined">
+          <span className="material-symbols-outlined">
             expand_more
           </span>
         </button>
