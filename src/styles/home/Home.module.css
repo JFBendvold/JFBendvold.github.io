@@ -53,6 +53,20 @@
     object-fit: contain;
 }
 
+.textOverlay .buttonRow .textButton {
+    background-color: #F7EDE2;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 2rem;
+    font-weight: 300;
+    color: #0F0F0F;
+    text-decoration: none;
+}
+
 .arrowButton {
     background-color: transparent;
     border: none;
