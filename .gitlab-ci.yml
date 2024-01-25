@@ -45,6 +45,11 @@ deploy_to_github_pages:
         - git init
         - git config user.name "JFBendvold"
         - git config user.email "deploy@ghpages.com"
+        - cd out
+        - touch CNAME
+        - echo 'lokalapp.org' > CNAME
+        - touch 404.html
+        - echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>404 - Redirecting...</title><script>setTimeout(function() {window.location.href = "/";}, 1000);</script></head><body><p>Redirecting to the homepage...</p></body></html>' > 404.html
         - BRANCH="temp"
         - git branch -d $BRANCH || true
         - git checkout -b $BRANCH
