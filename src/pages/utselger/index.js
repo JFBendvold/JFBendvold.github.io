@@ -13,7 +13,7 @@ export default function Home() {
             Kom i gang med å gjøre<br/>utsalget ditt mer tilgjengelig for kundene
           </p>
           <div className={styles.buttonRow}>
-            <Link href="https://lfkszfufkkybbuqunqke.supabase.co/auth/v1/authorize?provider=google"
+            <Link href="/utselger/registrer"
             className={styles.textButton}>
               Registrer deg som utselger
             </Link>
