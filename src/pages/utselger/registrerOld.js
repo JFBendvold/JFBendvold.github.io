@@ -13,13 +13,21 @@ export default function Registrer() {
     const supabaseClient = useSupabaseClient();
 
     // Process information
-    const [processStep, setProcessStep] = useState(0);
+    const [processStep, setProcessStep] = useState(5);
+    const [types, setTypes] = useState([
+        { id: 1, name: 'Gårdsutsalg' },
+        { id: 2, name: 'Gartneri' },
+        { id: 3, name: 'Fiskeutsalg' },
+        { id: 4, name: 'Bakstutsalg' },
+        { id: 5, name: 'Tekstilutsalg' },
+        { id: 6, name: 'Antikvitetsutsalg' },
+        { id: 7, name: 'Kunstutsalg' },
+        { id: 8, name: 'Andre utsalg' }
+    ]);
     const [selectExpanded, setSelectExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
 
     // Personal information
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [email, setEmail] = useState('');
     const [confirmEmail, setConfirmEmail] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -31,10 +39,36 @@ export default function Registrer() {
 
     // Establishment information
     const [establishmentName, setEstablishmentName] = useState('MVP AS');
-    const [establishmentAccountNumber, setEstablishmentAccountNumber] = useState('');
+    const [establishmentAccountNumber, setEstablishmentAccountNumber] = useState('1234.56.78901');
+
+    // Company information
+    const [companyName, setCompanyName] = useState('');
+    const [companyType, setCompanyType] = useState('');
+    const [companyAddress, setCompanyAddress] = useState('');
+    const [companyCoordinates, setCompanyCoordinates] = useState({ lat: 63.4305, lng: 10.3951 });
+    const [companyZip, setCompanyZip] = useState('');
+    const [companyPhone, setCompanyPhone] = useState('');
+    const [companyEmail, setCompanyEmail] = useState('');
+    const [companyDescription, setCompanyDescription] = useState('');
 
     // Legal information
     const [terms, setTerms] = useState(false);
+
+    // Fetch types from Supabase
+    useEffect(() => {
+        async function fetchTypes() {
+            const { data, error } = await supabaseClient
+                .from('Sales_location_types')
+                .select('*');
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(data);
+                setTypes(data);
+            }
+        }
+        fetchTypes();
+    }, []);
 
     // When changing personal email, change establishment email if empty
     function changeEmail(newEmail) {
@@ -51,6 +85,11 @@ export default function Registrer() {
         }
         setPhone(newPhone);
     }
+
+    // When selecting a type, close the select
+    useEffect(() => {
+        setSelectExpanded(false);
+    }, [companyType]);
 
     // Next step from personal information
     function nextStepPersonal() {
@@ -69,10 +108,30 @@ export default function Registrer() {
     // Next step from establishment information
     function nextStepEstablishment() {
         // Check if all fields are filled
-        if (establishmentName === '') {
-            openNotificationError('Feil', 'Fyll inn navnet på bedriften');
+        if (establishmentName === '' || establishmentAccountNumber === '') {
+            openNotificationError('Feil', 'Fyll inn alle feltene');
+        } else if (establishmentAccountNumber.length !== 11) {
+            openNotificationError('Feil', 'Kontonummeret er ikke gyldig');
         } else {
             setProcessStep(2);
+        }
+    }
+
+    // Next step from company information
+    function nextStepCompany() {
+        // Check if all fields are filled
+        if (companyName === '' || companyType === '' || companyAddress === '' || companyZip === '' || companyPhone === '' || companyEmail === '' || companyDescription === '') {
+            openNotificationError('Feil', 'Fyll inn alle feltene');
+        } else {
+            // Next step
+            let address = companyAddress + ' ' + companyZip;
+            fromAddress(address).then(response => {
+                console.log(response);
+                setCompanyCoordinates(response.results[0].geometry.location);
+            }).catch(error => {
+                console.log(error);
+            });
+            setProcessStep(3);
         }
     }
 
@@ -80,6 +139,12 @@ export default function Registrer() {
     function validateEmail(email) {
         const re = /\S+@\S+\.\S+/;
         return re.test(email);
+    }
+
+    // Set coordinates
+    function setCoordinates(event) {
+        console.log(event);
+        setCompanyCoordinates(event.latLng.toJSON());
     }
 
     // Submit application
@@ -92,6 +157,8 @@ export default function Registrer() {
         }
 
         // Check if all fields are filled
+
+
 
         setLoading(false);
     }
@@ -178,7 +245,7 @@ export default function Registrer() {
                                 <input type="text" id="establishmentName" name="establishmentName" value={establishmentName} onChange={e => setEstablishmentName(e.target.value)} placeholder="Navn" />
                             </div>
                             <div className={styles.inputColumn}>
-                            	<label htmlFor="establishmentAccountNumber">Kontonummer (Valgfritt)</label>
+                            	<label htmlFor="establishmentAccountNumber">Kontonummer</label>
                                 <input type="text" id="establishmentAccountNumber" name="establishmentAccountNumber" value={establishmentAccountNumber} onChange={e => setEstablishmentAccountNumber(e.target.value)} placeholder="Kontonummer" />
                             </div>
                         </div>
@@ -193,7 +260,110 @@ export default function Registrer() {
                     </form>
                 </section>
             }
-            {processStep === 2 && // Confirm information
+            {processStep === 2 && // Company information
+                <section className={styles.section}>
+                    <h1 className={styles.title}>
+                        Fortell oss litt om utsalgsstedet
+                    </h1>
+                    <form className={styles.form}>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyName">Navn</label>
+                                <input type="text" id="companyName" name="companyName" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Navn" />
+                            </div>
+                            <div className={styles.inputColumn}>
+                            	<label htmlFor="companyType">Type</label>
+                                <div className={styles.selectWrapper}>
+                                    <div className={styles.select} onClick={() => setSelectExpanded(!selectExpanded)}>
+                                        <span>{companyType === '' ? 'Velg type' : companyType}</span>
+                                        <span className="material-symbols-outlined">
+                                            {selectExpanded ? 'expand_less' : 'expand_more'}
+                                        </span>
+                                    </div>
+                                    {selectExpanded &&
+                                        <div className={styles.selectOptions}>
+                                            {types.map(type => (
+                                                <div className={styles.selectOption} key={type.id} onClick={() => setCompanyType(type.type_name)}>
+                                                    {type.type_name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyAddress">Adresse</label>
+                                <input type="text" id="companyAddress" name="companyAddress" value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} placeholder="Adresse" />
+                            </div>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyZip">Postnummer</label>
+                                <input type="text" id="companyZip" name="companyZip" value={companyZip} onChange={e => setCompanyZip(e.target.value)} placeholder="Postnummer" />
+                            </div>
+                        </div>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                            	<label htmlFor="companyPhone">Telefonnummer</label>
+                                <input type="text" id="companyPhone" name="companyPhone" value={companyPhone} onChange={e => setCompanyPhone(e.target.value)} placeholder="Telefonnummer" />
+                            </div>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyEmail">E-post</label>
+                                <input type="email" id="companyEmail" name="companyEmail" value={companyEmail} onChange={e => setCompanyEmail(e.target.value)} placeholder="E-post" />
+                            </div>
+                        </div>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                            	<label htmlFor="companyDescription">Beskrivelse</label>
+                                <input type="text" id="companyDescription" name="companyDescription" value={companyDescription} onChange={e => setCompanyDescription(e.target.value)} placeholder="Beskrivelse" />
+                            </div>
+                        </div>
+                        <div className={styles.buttonRow}>
+                            <button type="button" className={styles.button} onClick={() => setProcessStep(1)}>
+                                Tilbake
+                            </button>
+                            <button type="button" className={styles.button} onClick={nextStepCompany}>
+                                Neste
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            }
+            {processStep === 3 && // Pinpoint location on map
+                <section className={styles.section}>
+                    <h1 className={styles.title}>
+                        Plasser utsalgsstedet på kartet
+                    </h1>
+                    <form className={styles.form}>
+                        <div className={styles.mapContainer}>
+                            <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+                                <Map 
+                                center={companyCoordinates} 
+                                zoom={15} 
+                                className={styles.map}
+                                fullscreenControl={false}
+                                streetViewControl={false}
+                                keyboardShortcuts={false}
+                                >
+                                    <Marker position={companyCoordinates}
+                                    onDragEnd={e => setCoordinates(e)}
+                                    draggable={true}
+                                    />
+                                </Map>
+                            </APIProvider>
+                        </div>
+                        <div className={styles.buttonRow}>
+                            <button type="button" className={styles.button} onClick={() => setProcessStep(2)}>
+                                Tilbake
+                            </button>
+                            <button type="button" className={styles.button} onClick={() => setProcessStep(4)}>
+                                Neste
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            }
+            {processStep === 4 && // Confirm information
                 <section className={styles.section}>
                     <h1 className={styles.title}>
                         Bekreft søknaden din
@@ -234,6 +404,31 @@ export default function Registrer() {
                                 </p>
                             </div>
                         </div>
+                        <div className={styles.box}>
+                            <h2 className={styles.boxTitle}>
+                                Utsalgsstedinformasjon
+                            </h2>
+                            <div className={styles.boxContent}>
+                                <p className={styles.boxText}>
+                                    {companyName}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyType}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyAddress}, {companyZip}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyPhone}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyEmail}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyDescription}
+                                </p>
+                            </div>
+                        </div>
                         <div className={styles.buttonRow}>
                             <button type="button" className={styles.button} onClick={() => setProcessStep(3)}>
                                 Tilbake
@@ -245,7 +440,7 @@ export default function Registrer() {
                     </form>
                 </section>
             }
-            {processStep === 3 && // Terms and conditions
+            {processStep === 5 && // Terms and conditions
                 <section className={styles.section}>
                     <h1 className={styles.title}>
                         Vilkår og betingelser

@@ -2,8 +2,24 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "@/styles/home/Home.module.css";
 import HomeHeader from "@/components/UtselgerHeader";
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useLayoutEffect, useState } from "react";
 
 export default function Home() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  // Supabase client
+  const supabaseClient = useSupabaseClient();
+
+  // Check if user is logged in
+  useLayoutEffect(() => {
+    supabaseClient.auth.getUser().then((user) => {
+      setLoggedIn(true);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }, [supabaseClient]);
+
   return (
     <main className={styles.main}>
       <HomeHeader />
