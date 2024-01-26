@@ -26,6 +26,7 @@ build_project:
     stage: build
     script:
         - npm ci
+        - echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" > .env.local
         - npm run build
     dependencies:
         - install_dependencies

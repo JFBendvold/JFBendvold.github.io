@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { setKey } from 'react-geocode'
 
 function MyApp({ Component, pageProps }) {
+  
   // Create a new Supabase Client for browser
   const [client] = useState(createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY))
   setKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
