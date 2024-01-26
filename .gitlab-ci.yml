@@ -9,6 +9,7 @@ cache:
 stages:
     - install
     - build
+    - test
     - deploy
 
 install_dependencies:
@@ -38,6 +39,24 @@ build_project:
         paths:
             - out/
         expire_in: 1 day
+
+component_test:
+    stage: test
+    image: cypress/base:18.16.0
+    script:
+        - npm ci
+        - npm install cypress
+        - npm run cy:comp | tee tmp.log
+        - sed 's/\x1b\[[0-9;]*m//g' tmp.log > component-test.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+    cache:
+        key: ${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+        policy: pull
+    artifacts:
+        name: "Component test job ${CI_JOB_ID}"
+        paths:
+            - component-test.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
 
 deploy_to_github_pages:
     stage: deploy
