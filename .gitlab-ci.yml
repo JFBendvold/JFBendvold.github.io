@@ -1,0 +1,84 @@
+image: node:latest
+
+cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+        - node_modules/
+        - out/
+
+stages:
+    - install
+    - build
+    - test
+    - deploy
+
+install_dependencies:
+    stage: install
+    script:
+        - npm ci
+    cache:
+        key: ${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+        policy: push
+
+build_project:
+    stage: build
+    script:
+        - npm ci
+        - npm run build
+    dependencies:
+        - install_dependencies
+    cache:
+        key: ${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+        policy: pull
+    artifacts:
+        name: "Build ${CI_COMMIT_REF_NAME}-${CI_JOB_ID}"
+        paths:
+            - out/
+        expire_in: 1 day
+
+component_test:
+    stage: test
+    image: cypress/base:18.16.0
+    script:
+        - npm ci
+        - npm install cypress
+        - npm run cy:comp | tee tmp.log
+        - sed 's/\x1b\[[0-9;]*m//g' tmp.log > component-test.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+    cache:
+        key: ${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+        policy: pull
+    artifacts:
+        name: "Component test job ${CI_JOB_ID}"
+        paths:
+            - component-test.${CI_COMMIT_REF_NAME}-${CI_JOB_ID}.log
+
+deploy_to_github_pages:
+    stage: deploy
+    script:
+        - git init
+        - git config user.name "JFBendvold"
+        - git config user.email "deploy@ghpages.com"
+        - cd out
+        - touch CNAME
+        - echo 'lokalapp.org' > CNAME
+        - touch 404.html
+        - echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>404 - Redirecting...</title><script>setTimeout(function() {window.location.href = "/";}, 1000);</script></head><body><p>Redirecting to the homepage...</p></body></html>' > 404.html
+        - BRANCH="temp"
+        - git branch -d $BRANCH || true
+        - git checkout -b $BRANCH
+        - git add .
+        - git commit --allow-empty -m "Deploy ${CI_COMMIT_SHORT_SHA}. Created $(date +'%Y-%m-%d %H:%M:%S')"
+        - git remote set-url origin https://JFBendvold:$GITHUB_TOKEN@github.com/JFBendvold/JFBendvold.github.io.git
+        - git push -u origin $BRANCH --force
+    dependencies:
+        - build_project
+    environment:
+        name: github-pages
+    only:
+        - deploy
