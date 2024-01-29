@@ -146,7 +146,6 @@ export default function Registrer() {
                 address: address,
                 zip: zip
             },
-            phone: phone
         })
 
         if (userError) {
@@ -156,19 +155,23 @@ export default function Registrer() {
         }
 
         // Insert establishment
+        let establishmentData = {
+            establishment_name: establishmentName,
+        }
+        if (establishmentAccountNumber !== '') {
+            establishmentData.account_number = establishmentAccountNumber;
+        }
         const { data: establishment, error: establishmentError } = await supabaseClient.from('Establishments').insert([
-            {
-                establishment_name: establishmentName,
-                account_number: establishmentAccountNumber,
-                seller_id: user.id
-            }
-        ]);
+            establishmentData
+        ]).select();
 
         if (establishmentError) {
             openNotificationError(establishmentError.message);
             setLoading(false);
             return;
         }
+
+        console.log(establishment);
 
         // Insert company
         const { data: company, error: companyError } = await supabaseClient.from('Sales_locations').insert([
