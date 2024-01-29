@@ -1,0 +1,25 @@
+.header {   
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: auto;
+    height: 80px;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+}
+
+.header .headerButton {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+.header .headerButton:hover {
+    text-decoration: underline;
+}

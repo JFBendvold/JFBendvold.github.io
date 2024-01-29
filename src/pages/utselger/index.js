@@ -14,7 +14,9 @@ export default function Home() {
   // Check if user is logged in
   useLayoutEffect(() => {
     supabaseClient.auth.getUser().then((user) => {
-      setLoggedIn(true);
+      if (user.data.user) {
+        setLoggedIn(true);
+      }
     }).catch((error) => {
       console.log(error);
     });
@@ -29,10 +31,18 @@ export default function Home() {
             Kom i gang med å gjøre<br/>utsalget ditt mer tilgjengelig for kundene
           </p>
           <div className={styles.buttonRow}>
+            {!loggedIn &&
             <Link href="/utselger/registrer"
             className={styles.textButton}>
               Registrer deg som utselger
             </Link>
+            }
+            {loggedIn &&
+            <Link href="/utselger/dashboard"
+            className={styles.textButton}>
+              Gå til dashboard
+            </Link>
+            }
           </div>
         </div>
         <button className={styles.arrowButton}>

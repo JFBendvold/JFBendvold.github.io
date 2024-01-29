@@ -7,21 +7,28 @@ import { openNotificationError } from '@/utils/Notifications';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { fromAddress } from 'react-geocode';
 import { Spin } from 'antd';
+import { useRouter } from 'next/router';
 
 export default function Registrer() {
-    // Supabase client
     const supabaseClient = useSupabaseClient();
+    const router = useRouter();
 
     // Process information
     const [processStep, setProcessStep] = useState(0);
+    const [types, setTypes] = useState([
+        { id: 1, name: 'Gårdsutsalg' },
+        { id: 2, name: 'Gartneri' },
+        { id: 3, name: 'Fiskeutsalg' },
+        { id: 4, name: 'Bakstutsalg' },
+        { id: 5, name: 'Tekstilutsalg' },
+        { id: 6, name: 'Antikvitetsutsalg' },
+        { id: 7, name: 'Kunstutsalg' },
+        { id: 8, name: 'Andre utsalg' }
+    ]);
     const [selectExpanded, setSelectExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
 
     // Personal information
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [email, setEmail] = useState('');
-    const [confirmEmail, setConfirmEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
@@ -31,18 +38,35 @@ export default function Registrer() {
 
     // Establishment information
     const [establishmentName, setEstablishmentName] = useState('MVP AS');
-    const [establishmentAccountNumber, setEstablishmentAccountNumber] = useState('');
+    const [establishmentAccountNumber, setEstablishmentAccountNumber] = useState('1234.56.78901');
+
+    // Company information
+    const [companyName, setCompanyName] = useState('');
+    const [companyType, setCompanyType] = useState('');
+    const [companyAddress, setCompanyAddress] = useState('');
+    const [companyCoordinates, setCompanyCoordinates] = useState({ lat: 63.4305, lng: 10.3951 });
+    const [companyZip, setCompanyZip] = useState('');
+    const [companyPhone, setCompanyPhone] = useState('');
+    const [companyDescription, setCompanyDescription] = useState('');
 
     // Legal information
     const [terms, setTerms] = useState(false);
 
-    // When changing personal email, change establishment email if empty
-    function changeEmail(newEmail) {
-        if (companyEmail === '' || companyEmail === email) {
-            setCompanyEmail(newEmail);
+    // Fetch types from Supabase
+    useEffect(() => {
+        async function fetchTypes() {
+            const { data, error } = await supabaseClient
+                .from('Sales_location_types')
+                .select('*');
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(data);
+                setTypes(data);
+            }
         }
-        setEmail(newEmail);
-    }
+        fetchTypes();
+    }, []);
 
     // When changing personal phone, change establishment phone if empty
     function changePhone(newPhone) {
@@ -52,15 +76,16 @@ export default function Registrer() {
         setPhone(newPhone);
     }
 
+    // When selecting a type, close the select
+    useEffect(() => {
+        setSelectExpanded(false);
+    }, [companyType]);
+
     // Next step from personal information
     function nextStepPersonal() {
         // Check if all fields are filled
-        if (firstName === '' || lastName === '' || email === '' || confirmEmail === '' || phone === '' || dob === '' || address === '' || zip === '') {
+        if (firstName === '' || lastName === '' || phone === '' || dob === '' || address === '' || zip === '') {
             openNotificationError('Feil', 'Fyll inn alle feltene');
-        } else if (email !== confirmEmail) {
-            openNotificationError('Feil', 'E-postene er ikke like');
-        } else if (!validateEmail(email)) {
-            openNotificationError('Feil', 'E-posten er ikke gyldig');
         } else {
             setProcessStep(1);
         }
@@ -70,16 +95,34 @@ export default function Registrer() {
     function nextStepEstablishment() {
         // Check if all fields are filled
         if (establishmentName === '') {
-            openNotificationError('Feil', 'Fyll inn navnet på bedriften');
+            openNotificationError('Feil', 'Fyll inn alle feltene');
         } else {
             setProcessStep(2);
         }
     }
 
-    // Check if email is valid
-    function validateEmail(email) {
-        const re = /\S+@\S+\.\S+/;
-        return re.test(email);
+    // Next step from company information
+    function nextStepCompany() {
+        // Check if all fields are filled
+        if (companyName === '' || companyType === '' || companyAddress === '' || companyZip === '' || companyPhone === '' || companyDescription === '') {
+            openNotificationError('Feil', 'Fyll inn alle feltene');
+        } else {
+            // Next step
+            let address = companyAddress + ' ' + companyZip;
+            fromAddress(address).then(response => {
+                console.log(response);
+                setCompanyCoordinates(response.results[0].geometry.location);
+            }).catch(error => {
+                console.log(error);
+            });
+            setProcessStep(3);
+        }
+    }
+
+    // Set coordinates
+    function setCoordinates(event) {
+        console.log(event);
+        setCompanyCoordinates(event.latLng.toJSON());
     }
 
     // Submit application
@@ -92,8 +135,64 @@ export default function Registrer() {
         }
 
         // Check if all fields are filled
+        
+        // Update user information
+        const { data: user, error: userError } = await supabaseClient.auth.updateUser({
+            data: {
+                first_name: firstName,
+                last_name: lastName,
+                phone: phone,
+                dob: dob,
+                address: address,
+                zip: zip
+            },
+            phone: phone
+        })
+
+        if (userError) {
+            openNotificationError(userError.message);
+            setLoading(false);
+            return;
+        }
+
+        // Insert establishment
+        const { data: establishment, error: establishmentError } = await supabaseClient.from('Establishments').insert([
+            {
+                establishment_name: establishmentName,
+                account_number: establishmentAccountNumber,
+                seller_id: user.id
+            }
+        ]);
+
+        if (establishmentError) {
+            openNotificationError(establishmentError.message);
+            setLoading(false);
+            return;
+        }
+
+        // Insert company
+        const { data: company, error: companyError } = await supabaseClient.from('Sales_locations').insert([
+            {
+                sales_location_name: companyName,
+                type_id: types.find(type => type.type_name === companyType).id,
+                address: companyAddress,
+                lat: companyCoordinates.lat,
+                lng: companyCoordinates.lng,
+                zip_code: companyZip,
+                sales_location_tlf: companyPhone,
+                description: companyDescription,
+                establishment_id: establishment[0].id
+            }
+        ]);
+
+        if (companyError) {
+            openNotificationError(companyError.message);
+            return;
+        }
+
 
         setLoading(false);
+        router.push('/utselger/dashboard');
     }
 
 
@@ -104,14 +203,14 @@ export default function Registrer() {
                 <Link href="/" className={styles.logo}>
                     <Image src="/icons/Logo.svg" alt="Logo" width={98} height={98} priority />
                 </Link>
-                <Link href="/utselger/login">
-                    Er du allerede registrert?
+                <Link href="/">
+                    Avbryt
                 </Link>
             </header>
             {processStep === 0 && // Personal information
                 <section className={styles.section}>
                     <h1 className={styles.title}>
-                        Fortell oss litt om deg selv
+                        Fortell oss litt mer om deg selv
                     </h1>
                     <form className={styles.form}>
                         <div className={styles.inputRow}>
@@ -134,18 +233,6 @@ export default function Registrer() {
                             <div className={styles.inputColumn}>
                             	<label htmlFor="dob">Fødselsdato</label>
                                 <input type="date" id="dob" name="dob" value={dob} onChange={e => setDob(e.target.value)} placeholder="Fødselsdato" />
-                            </div>
-                        </div>
-                        <div className={styles.inputRow}>
-                            <div className={styles.inputColumn}>
-                                <label htmlFor="email">E-post</label>
-                                <input type="email" id="email" name="email" value={email} 
-                                onChange={e => changeEmail(e.target.value)}
-                                placeholder="E-post" />
-                            </div>
-                            <div className={styles.inputColumn}>
-                            	<label htmlFor="confirmEmail">Bekreft e-post</label>
-                                <input type="email" id="confirmEmail" name="confirmEmail" value={confirmEmail} onChange={e => setConfirmEmail(e.target.value)} placeholder="Bekreft e-post" />
                             </div>
                         </div>
                         <div className={styles.inputRow}>
@@ -178,7 +265,7 @@ export default function Registrer() {
                                 <input type="text" id="establishmentName" name="establishmentName" value={establishmentName} onChange={e => setEstablishmentName(e.target.value)} placeholder="Navn" />
                             </div>
                             <div className={styles.inputColumn}>
-                            	<label htmlFor="establishmentAccountNumber">Kontonummer (Valgfritt)</label>
+                            	<label htmlFor="establishmentAccountNumber">Kontonummer</label>
                                 <input type="text" id="establishmentAccountNumber" name="establishmentAccountNumber" value={establishmentAccountNumber} onChange={e => setEstablishmentAccountNumber(e.target.value)} placeholder="Kontonummer" />
                             </div>
                         </div>
@@ -193,7 +280,104 @@ export default function Registrer() {
                     </form>
                 </section>
             }
-            {processStep === 2 && // Confirm information
+            {processStep === 2 && // Company information
+                <section className={styles.section}>
+                    <h1 className={styles.title}>
+                        Fortell oss litt om utsalgsstedet
+                    </h1>
+                    <form className={styles.form}>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyName">Navn</label>
+                                <input type="text" id="companyName" name="companyName" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Navn" />
+                            </div>
+                            <div className={styles.inputColumn}>
+                            	<label htmlFor="companyType">Type</label>
+                                <div className={styles.selectWrapper}>
+                                    <div className={styles.select} onClick={() => setSelectExpanded(!selectExpanded)}>
+                                        <span>{companyType === '' ? 'Velg type' : companyType}</span>
+                                        <span className="material-symbols-outlined">
+                                            {selectExpanded ? 'expand_less' : 'expand_more'}
+                                        </span>
+                                    </div>
+                                    {selectExpanded &&
+                                        <div className={styles.selectOptions}>
+                                            {types.map(type => (
+                                                <div className={styles.selectOption} key={type.id} onClick={() => setCompanyType(type.type_name)}>
+                                                    {type.type_name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyAddress">Adresse</label>
+                                <input type="text" id="companyAddress" name="companyAddress" value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} placeholder="Adresse" />
+                            </div>
+                            <div className={styles.inputColumn}>
+                                <label htmlFor="companyZip">Postnummer</label>
+                                <input type="text" id="companyZip" name="companyZip" value={companyZip} onChange={e => setCompanyZip(e.target.value)} placeholder="Postnummer" />
+                            </div>
+                        </div>
+                        <div className={styles.inputRow}>
+                            <div className={styles.inputColumn}>
+                            	<label htmlFor="companyPhone">Telefonnummer</label>
+                                <input type="text" id="companyPhone" name="companyPhone" value={companyPhone} onChange={e => setCompanyPhone(e.target.value)} placeholder="Telefonnummer" />
+                            </div>
+                            <div className={styles.inputColumn}>
+                            	<label htmlFor="companyDescription">Beskrivelse</label>
+                                <input type="text" id="companyDescription" name="companyDescription" value={companyDescription} onChange={e => setCompanyDescription(e.target.value)} placeholder="Beskrivelse" />
+                            </div>
+                        </div>
+                        <div className={styles.buttonRow}>
+                            <button type="button" className={styles.button} onClick={() => setProcessStep(1)}>
+                                Tilbake
+                            </button>
+                            <button type="button" className={styles.button} onClick={nextStepCompany}>
+                                Neste
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            }
+            {processStep === 3 && // Pinpoint location on map
+                <section className={styles.section}>
+                    <h1 className={styles.title}>
+                        Plasser utsalgsstedet på kartet
+                    </h1>
+                    <form className={styles.form}>
+                        <div className={styles.mapContainer}>
+                            <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+                                <Map 
+                                center={companyCoordinates} 
+                                zoom={15} 
+                                className={styles.map}
+                                fullscreenControl={false}
+                                streetViewControl={false}
+                                keyboardShortcuts={false}
+                                >
+                                    <Marker position={companyCoordinates}
+                                    onDragEnd={e => setCoordinates(e)}
+                                    draggable={true}
+                                    />
+                                </Map>
+                            </APIProvider>
+                        </div>
+                        <div className={styles.buttonRow}>
+                            <button type="button" className={styles.button} onClick={() => setProcessStep(2)}>
+                                Tilbake
+                            </button>
+                            <button type="button" className={styles.button} onClick={() => setProcessStep(4)}>
+                                Neste
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            }
+            {processStep === 4 && // Confirm information
                 <section className={styles.section}>
                     <h1 className={styles.title}>
                         Bekreft søknaden din
@@ -209,9 +393,6 @@ export default function Registrer() {
                                 </p>
                                 <p className={styles.boxText}>
                                     {phone}
-                                </p>
-                                <p className={styles.boxText}>
-                                    {email}
                                 </p>
                                 <p className={styles.boxText}>
                                     {dob}
@@ -234,6 +415,28 @@ export default function Registrer() {
                                 </p>
                             </div>
                         </div>
+                        <div className={styles.box}>
+                            <h2 className={styles.boxTitle}>
+                                Utsalgsstedinformasjon
+                            </h2>
+                            <div className={styles.boxContent}>
+                                <p className={styles.boxText}>
+                                    {companyName}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyType}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyAddress}, {companyZip}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyPhone}
+                                </p>
+                                <p className={styles.boxText}>
+                                    {companyDescription}
+                                </p>
+                            </div>
+                        </div>
                         <div className={styles.buttonRow}>
                             <button type="button" className={styles.button} onClick={() => setProcessStep(3)}>
                                 Tilbake
@@ -245,7 +448,7 @@ export default function Registrer() {
                     </form>
                 </section>
             }
-            {processStep === 3 && // Terms and conditions
+            {processStep === 5 && // Terms and conditions
                 <section className={styles.section}>
                     <h1 className={styles.title}>
                         Vilkår og betingelser
