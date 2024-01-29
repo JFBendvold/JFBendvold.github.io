@@ -16,15 +16,28 @@ export default function Dashboard() {
 
     // User variables
     const [establishment, setEstablishment] = useState(null);
+    const [salesLocations, setSalesLocations] = useState(null);
+    const [selectedSalesLocation, setSelectedSalesLocation] = useState(null); // id
 
-    // Get establishment
+    // Get data from database
     useEffect(() => {
-        getEstablishment();
+        fetchData();
     }, []);
 
-    function getEstablishment() {
+    async function fetchData() {
         setLoading(true);
-        supabase
+
+        await getEstablishment();
+
+
+
+
+        setLoading(false);
+    }
+
+    // Get establishment
+    async function getEstablishment() {
+        await supabase
             .from('Establishments')
             .select('*')
             .then(({ data: establishments, error }) => {
@@ -39,8 +52,12 @@ export default function Dashboard() {
                         openCreateEstablishmentModal();
                     }
                 }
-                setLoading(false);
         });
+    }
+
+    // Get sales locations
+    async function getSalesLocations() {
+        //TODO: Get sales locations
     }
 
     // Open create establishment modal
