@@ -2,8 +2,26 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "@/styles/home/Home.module.css";
 import HomeHeader from "@/components/UtselgerHeader";
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useLayoutEffect, useState } from "react";
 
 export default function Home() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  // Supabase client
+  const supabaseClient = useSupabaseClient();
+
+  // Check if user is logged in
+  useLayoutEffect(() => {
+    supabaseClient.auth.getUser().then((user) => {
+      if (user.data.user) {
+        setLoggedIn(true);
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
+  }, [supabaseClient]);
+
   return (
     <main className={styles.main}>
       <HomeHeader />
@@ -13,10 +31,18 @@ export default function Home() {
             Kom i gang med å gjøre<br/>utsalget ditt mer tilgjengelig for kundene
           </p>
           <div className={styles.buttonRow}>
-            <Link href="https://lfkszfufkkybbuqunqke.supabase.co/auth/v1/authorize?provider=google"
+            {!loggedIn &&
+            <Link href="/utselger/registrer"
             className={styles.textButton}>
               Registrer deg som utselger
             </Link>
+            }
+            {loggedIn &&
+            <Link href="/utselger/dashboard"
+            className={styles.textButton}>
+              Gå til dashboard
+            </Link>
+            }
           </div>
         </div>
         <button className={styles.arrowButton}>
