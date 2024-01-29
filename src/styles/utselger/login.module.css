@@ -86,8 +86,26 @@
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.content .buttonContainer button img {
+    margin-left: 0.5rem;
 }
 
 .content .buttonContainer button:hover {
-    background-color: #1F1F1F;
+    opacity: 0.8;
+}
+
+.content .buttonContainer .facebook {
+    background-color: #1877F2;
+}
+
+.content .buttonContainer .google {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
 }

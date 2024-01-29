@@ -58,6 +58,44 @@ export default function Login() {
         }
     }
 
+    // Handle login with Google
+    async function handleLoginGoogle() {
+        setLoading(true);
+
+        const { user, session, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                },
+                redirectTo: process.env.NEXT_PUBLIC_BASE_URL + '/utselger/dashboard',
+            }
+        })
+
+        if (error) {
+            openNotificationError(error.message);
+            setLoading(false);
+        }
+    }
+
+    // Handle login with Facebook
+    async function handleLoginFacebook() {
+        setLoading(true);
+
+        const { user, session, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'facebook',
+            options: {
+                redirectTo: process.env.NEXT_PUBLIC_BASE_URL + '/utselger/dashboard',
+            }
+        })
+
+        if (error) {
+            openNotificationError(error.message);
+            setLoading(false);
+        }
+    }
+
     return (
         <main className={styles.main}>
             <header className={styles.header}>
@@ -79,6 +117,18 @@ export default function Login() {
                 </div>
                 <div className={styles.buttonContainer}>
                     <button onClick={handleLogin}>Logg inn</button>
+                </div>
+                <div className={styles.buttonContainer}>
+                    <button onClick={handleLoginFacebook} className={styles.facebook}>
+                        Logg inn med Facebook
+                        <Image src="/icons/login/facebook.svg" alt="Facebook" width={20} height={20} />
+                    </button>
+                </div>
+                <div className={styles.buttonContainer}>
+                    <button onClick={handleLoginGoogle} className={styles.google}>
+                        Logg inn med Google
+                        <Image src="/icons/login/Google_logo.svg" alt="Google" width={20} height={20} />
+                    </button>
                 </div>
             </div>
             )}
