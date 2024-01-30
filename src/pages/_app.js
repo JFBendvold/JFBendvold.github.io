@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Head from 'next/head'
 import { createBrowserClient } from '@supabase/ssr'
@@ -7,13 +8,21 @@ import { setKey } from 'react-geocode'
 import { useRouter } from 'next/router'
 import { openNotificationWarning } from '../utils/Notifications'
 
-const publicPages = ["/", "/utselger", "/utselger/login", "/utselger/registrer"]
+const publicPages = ["/", "/utselger/login", "/utselger/registrer"]
 
 // Gets the auth session from Supabase
 const fetchSession = async (client) => {
   const { data, error } = await client.auth.getSession()
   if (error) throw error
   return data
+}
+
+const executeRedirect = (router) => {
+  setTimeout(() => {
+    if (router.isReady) {
+        router.replace("/");
+    }
+}, 30);
 }
 
 function MyApp({ Component, pageProps }) {
@@ -27,22 +36,24 @@ function MyApp({ Component, pageProps }) {
 
   // Fetch session data from Supabase
   useEffect(() => {
-
     try {
       const session = fetchSession(client)
       setAuthenticated(session !== null)
     } catch (error) {
       console.log(error)
       openNotificationWarning("Advarsel", "Vennligst prøv igjen senere.")
-
     }
 
   }, [])
 
-  // Redirect to home page if not authenticated
-  if(!authenticated && !publicPages.includes(router.pathname)) {
-    router.replace("/")
-  }
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!publicPages.includes(router.pathname)) {
+      if (!authenticated) {
+        executeRedirect(router);
+      }
+    }
+  }, [authenticated, router.pathname])
 
   return (
     <>
