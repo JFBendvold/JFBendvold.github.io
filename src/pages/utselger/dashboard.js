@@ -8,6 +8,15 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import ProductList from '@/components/dashboard/products/ProductList';
 import AddProduct from '@/components/dashboard/products/AddProduct';
+import { createBrowserClient } from '@supabase/ssr'
+import { setKey } from 'react-geocode'
+
+// Gets the auth session from Supabase
+const fetchSession = async (client) => {
+    const { data, error } = await client.auth.getSession()
+    if (error) throw error
+    return data
+} //TODO: change to prop passing
 
 export default function Dashboard() {
     const supabase = useSupabaseClient();
@@ -20,6 +29,10 @@ export default function Dashboard() {
     const [establishment, setEstablishment] = useState(null);
     const [salesLocations, setSalesLocations] = useState(null);
     const [selectedSalesLocation, setSelectedSalesLocation] = useState(null); // id
+    const [client] = useState(createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY))
+    setKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
+    
+    const [authenticated, setAuthenticated] = useState(false)
 
     // Page variables
     const [expandedSalesLocations, setExpandedSalesLocations] = useState(false);
@@ -33,7 +46,20 @@ export default function Dashboard() {
         setLoading(true);
 
         let establishment = await getEstablishment();
-        await getSalesLocations(establishment.id);
+        if (establishment) {
+            setEstablishment(establishment);
+            await getSalesLocations(establishment.id);
+        } else {
+            openNotificationError('Kunne ikke hente utsalg');
+        }
+        
+        try {
+            const session = fetchSession(client)
+            setAuthenticated(session !== null)
+          } catch (error) {
+            console.log(error)
+            openNotificationWarning("Advarsel", "Vennligst prøv igjen senere.")
+          }
 
         setLoading(false);
     }
