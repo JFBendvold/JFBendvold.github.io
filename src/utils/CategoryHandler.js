@@ -35,7 +35,7 @@ function formatTraversal(currentNode) {
     let capitalized = title.charAt(0).toUpperCase() + title.slice(1)
     let currentObject = {
         title: capitalized,
-        value: currentNode.category.category_name
+        value: currentNode.category.id
     }
 
     if (currentNode.children && currentNode.children.length > 0) {

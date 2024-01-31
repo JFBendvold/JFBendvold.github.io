@@ -6,7 +6,7 @@ import { openNotificationError, openNotificationSuccess } from '@/utils/Notifica
 import { Spin, TreeSelect } from 'antd';
 import { formatToTreeData } from '@/utils/CategoryHandler';
 
-export default function AddProduct() {
+export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
 
     const [loading, setLoading] = useState(false);
@@ -55,38 +55,72 @@ export default function AddProduct() {
 
     useEffect(() => {
         setFetchedCategories()
+        console.log("Sales location id")
+        console.log(salesLocationId)
     }, [])
 
     async function fetchAllCategories() {
-        let { data: Categories, error } = await supabase
-    .from('Categories')
-    .select('*')
-        
-    setCategories(Categories)
+            let { data: Categories, error } = await supabase
+        .from('Categories')
+        .select('*')
+            
+        setCategories(Categories)
 
 
-    if(error) {
-        console.log(error)
-    }
-    else {
-        console.log("Categories")
-        console.log(Categories)
+        if(error) {
+            console.log(error)
+            return [];
+        }
+        else {
+            console.log("Categories")
+            console.log(Categories)
+            return Categories;
     }
 
     }
 
     async function setFetchedCategories() {
-        await fetchAllCategories()
-        let sorted = formatToTreeData(categories)
+        
+        let fetchedCategories = await fetchAllCategories()
         let count = 3
-        while (count < 4 && sorted.length == 0)
+        while (count < 4)
         {
-            await fetchAllCategories()
+            fetchedCategories = await fetchAllCategories()
+            if (fetchedCategories && fetchedCategories.length > 0) {
+                break;
+            }
             count++
         }
-        console.log(sorted)
-        setMappedTree(sorted)
 
+        if (fetchedCategories && fetchedCategories.length > 0) {
+            let sorted = formatToTreeData(fetchedCategories);
+            setMappedTree(sorted);
+        } else {
+            console.log("Failed to fetch categories after retries.");
+        }
+
+    }
+
+    async function publishProduct() {
+        const { data, error } = await supabase
+        .from('Products')
+        .insert([
+            {
+                Sales_location_id: salesLocationId,
+                product_name: productName,
+                product_description: productDescription,
+                price: productPrice,
+                quantity: productStock,
+                category_id: productCategoryId
+            }
+        ])
+        .select()
+
+        if (error) throw error
+        else {
+            console.log("This product was added:" + data)
+            openNotificationSuccess("Produktet ble lagt til", "Produktet ble lagt til i databasen")
+        }
     }
 
     // Handle submit
@@ -117,6 +151,13 @@ export default function AddProduct() {
 
         // Insert product into database
         //TODO: Insert product into database
+        try {
+            await publishProduct()
+        }
+       catch (error) {
+        openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
+       }
+
 
         setLoading(false);
     }
@@ -178,7 +219,6 @@ export default function AddProduct() {
                                 showSearch
                                 onChange={(value) => setProductCategoryId(value)}
                             />
-                            {/* <button onClick={checkCurrent}>Fetch</button> */}
                         </div>
                         <div className={styles.inputContainer}>
                             <button className={styles.submitButton} onClick={handleSubmit}>

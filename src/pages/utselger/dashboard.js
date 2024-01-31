@@ -33,6 +33,7 @@ export default function Dashboard() {
     setKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
     
     const [authenticated, setAuthenticated] = useState(false)
+    const [salesLocationId, setSalesLocatio] = useState(null)
 
     // Page variables
     const [expandedSalesLocations, setExpandedSalesLocations] = useState(false);
@@ -54,8 +55,12 @@ export default function Dashboard() {
         }
         
         try {
-            const session = fetchSession(client)
-            setAuthenticated(session !== null)
+            const session = await fetchSession(client)
+            console.log("session")
+            console.log(session)
+            setAuthenticated(session.session.access_token !== null) //TODO: eval
+            console.log("authenticated")
+
           } catch (error) {
             console.log(error)
             openNotificationWarning("Advarsel", "Vennligst prøv igjen senere.")
@@ -208,7 +213,7 @@ export default function Dashboard() {
                 ) : nav === 'products' ? (
                     <div className={styles.content}>
                         <ProductList />
-                        <AddProduct />
+                        <AddProduct salesLocationId={`${selectedSalesLocation}`}/>
                     </div>
                 ) : nav === 'employees' ? (
                     <div className={styles.content}>
