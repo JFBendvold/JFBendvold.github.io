@@ -34,9 +34,14 @@ export default function AddProduct({salesLocationId}) {
     }
 
     // Handle upload image
-    async function handleUploadImage()  {
-        alert('Upload image');
-        //TODO: Upload image
+    async function handleUploadImage(e)  {
+        if(uploadedImages.length < 3) {
+            const imageFile = e.target.files[0];
+            setUploadedImages([...uploadedImages, URL.createObjectURL(imageFile)])
+        }
+        else {
+            openNotificationError("PS", "Du kan ikke laste opp flere enn 3 bilder")
+        }
     }
 
     // Handle price change
@@ -155,17 +160,25 @@ export default function AddProduct({salesLocationId}) {
                 <div className={styles.form}>
                     <div className={styles.left}>
                         <div className={styles.imageUploadContainer}>
-                            {uploadedImages.length > 0 ? (
+                            {uploadedImages.length > 0 && (
                                 <div className={styles.imageUpload}>
-                                    <Image src={uploadedImages[0]} width={100} height={100} />
-                                </div>
-                            ) : (
-                                <div className={styles.imageUpload} onClick={handleUploadImage}>
-                                    <span className="material-symbols-outlined">
-                                        add
-                                    </span>
+                                    {uploadedImages.map((image, index) => (
+                                        <Image key={index} src={image} width={10} height={10} layout="fixed" alt="uploaded image"/>
+                                    ))}
                                 </div>
                             )}
+                            
+                                <div className={styles.imageUpload}>
+                                    <span className="material-symbols-outlined">
+                                        Image
+                                        <br />
+                                        <input id="image" type="file" accept="image/jpeg, image/png" name="image" onChange={
+                                            (e) => {
+                                                handleUploadImage(e)
+                                            }
+                                        }/>
+                                    </span>
+                                </div>
                         </div>
                     </div>
                     <div className={styles.right}>
