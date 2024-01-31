@@ -28,17 +28,6 @@ function createTreeFromCategories(categories) {
     return tree
 }
 
-// treeData={[
-//     { title: 'Light', value: 'light', children: [
-//         { title: 'Street', value: 'street' },
-//         { title: 'Bulb', value: 'bulb' },
-//     ]},
-//     { title: 'Heavy', value: 'heavy', children: [
-//         { title: 'Street', value: 'street2' },
-//         { title: 'Bulb', value: 'bulb2' },
-//     ]},
-// ]}
-
 function formatTraversal(currentNode) {
     if(!currentNode) return;
 
