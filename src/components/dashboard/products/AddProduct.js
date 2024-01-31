@@ -7,6 +7,7 @@ import { Spin, TreeSelect } from 'antd';
 import { formatToTreeData } from '@/utils/CategoryHandler'
 import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService';
+import { v4 as uuidv4 } from 'uuid'
 
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
@@ -42,6 +43,12 @@ export default function AddProduct({salesLocationId}) {
         else {
             openNotificationError("PS", "Du kan ikke laste opp flere enn 3 bilder")
         }
+    }
+
+    function removeImage(index) {
+        let newImages = uploadedImages
+        newImages.splice(index, 1)
+        setUploadedImages([...newImages])
     }
 
     // Handle price change
@@ -94,13 +101,28 @@ export default function AddProduct({salesLocationId}) {
 
     async function addProduct() {
         try{
-            console.log("Sales location id")
             const response = await createProduct(supabase,
                 salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId
                 )
 
             if (response) {
                 openNotificationSuccess("Vellykket", "Produktet ble lagt til i databasen")
+            }
+
+            console.log(response)
+
+            for(let i = 0; i < uploadedImages.length; i++) {
+                const image = uploadedImages[i]
+                const location_id = response[0].Sales_location_id
+
+                // const { data, error } = await supabase.storage.from('imgs').upload(location_id + "/" + uuidv4(), image) TODO: FIX THIS
+                if (error) {
+                    openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
+                }
+                else {
+                    console.log(data)
+                
+                }
             }
         }
         catch(error) {
@@ -160,25 +182,35 @@ export default function AddProduct({salesLocationId}) {
                 <div className={styles.form}>
                     <div className={styles.left}>
                         <div className={styles.imageUploadContainer}>
+                            {uploadedImages.length} / 3
                             {uploadedImages.length > 0 && (
                                 <div className={styles.imageUpload}>
-                                    {uploadedImages.map((image, index) => (
-                                        <Image key={index} src={image} width={10} height={10} layout="fixed" alt="uploaded image"/>
-                                    ))}
+                                    {
+                                        uploadedImages.map((image, index) => (
+                                            <div key={index} className={styles.imageContainer}>
+                                                <span className="material-symbols-outlined" 
+                                                    onClick={() => removeImage(index)}>
+                                                    close
+                                                </span>
+                                                <Image src={image} width={100} height={100} alt={`opplastet bilde ${index}`}/>
+                                            </div>
+                                        ))
+                                    }
+
                                 </div>
                             )}
                             
-                                <div className={styles.imageUpload}>
-                                    <span className="material-symbols-outlined">
-                                        Image
-                                        <br />
-                                        <input id="image" type="file" accept="image/jpeg, image/png" name="image" onChange={
-                                            (e) => {
-                                                handleUploadImage(e)
-                                            }
-                                        }/>
-                                    </span>
-                                </div>
+                            <div className={styles.imageUpload}>
+                                <span className="material-symbols-outlined">
+                                    Image
+                                    <br />
+                                    <input id="image" type="file" accept="image/jpeg" name="image" onChange={
+                                        (e) => {
+                                            handleUploadImage(e)
+                                        }
+                                    }/>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div className={styles.right}>
