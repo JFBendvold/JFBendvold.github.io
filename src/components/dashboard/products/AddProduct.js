@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, TreeSelect } from 'antd';
-import { formatToTreeData } from '@/utils/CategoryHandler';
+import { formatToTreeData } from '@/utils/CategoryHandler'
+import { createProduct } from '@/services/ProductService'
+import { fetchCategories } from '@/services/CategoryService';
 
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
@@ -41,8 +43,9 @@ export default function AddProduct({salesLocationId}) {
     async function handlePriceChange(e) {
         const price = e.target.value;
 
-        // Dont allow dot, only comma
+        // Ensures that the user is required to enter a number with comma, not a dot
         if (price.includes('.')) {
+            openNotificationError('Ugyldig pris', 'Tips: forsøk å bruk komma i stedet for punktum');
             return;
         }
 
@@ -55,75 +58,53 @@ export default function AddProduct({salesLocationId}) {
 
     useEffect(() => {
         setFetchedCategories()
-        console.log("Sales location id")
-        console.log(salesLocationId)
     }, [])
 
-    async function fetchAllCategories() {
-            let { data: Categories, error } = await supabase
-        .from('Categories')
-        .select('*')
-            
-        setCategories(Categories)
-
-
-        if(error) {
-            console.log(error)
-            return [];
-        }
-        else {
-            console.log("Categories")
-            console.log(Categories)
-            return Categories;
-    }
-
-    }
 
     async function setFetchedCategories() {
-        
-        let fetchedCategories = await fetchAllCategories()
-        let count = 3
-        while (count < 4)
-        {
-            fetchedCategories = await fetchAllCategories()
-            if (fetchedCategories && fetchedCategories.length > 0) {
-                break;
-            }
-            count++
-        }
-
-        if (fetchedCategories && fetchedCategories.length > 0) {
-            let sorted = formatToTreeData(fetchedCategories);
-            setMappedTree(sorted);
-        } else {
-            console.log("Failed to fetch categories after retries.");
-        }
-
-    }
-
-    async function publishProduct() {
-        const { data, error } = await supabase
-        .from('Products')
-        .insert([
+        try {
+            let fetchedCategories = await fetchCategories(supabase)
+            let count = 0
+            while (count < 4)
             {
-                Sales_location_id: salesLocationId,
-                product_name: productName,
-                product_description: productDescription,
-                price: productPrice,
-                quantity: productStock,
-                category_id: productCategoryId
+                fetchedCategories = await fetchCategories(supabase)
+                if (fetchedCategories && fetchedCategories.length > 0) {
+                    break;
+                }
+                count++
             }
-        ])
-        .select()
 
-        if (error) throw error
-        else {
-            console.log("This product was added:" + data)
-            openNotificationSuccess("Produktet ble lagt til", "Produktet ble lagt til i databasen")
+            if (fetchedCategories && fetchedCategories.length > 0) {
+                let sorted = formatToTreeData(fetchedCategories);
+                setMappedTree(sorted);
+            } else {
+                openNotificationError("Noe gikk galt", "Kategoriene kunne ikke hentes for produktene")
+            }
+        }
+        catch(error) {
+            openNotificationError("Noe gikk galt", "Kategoriene kunne ikke hentes for produktene")
+        }   
+
+    }
+
+    async function addProduct() {
+        try{
+            console.log("Sales location id")
+            const response = await createProduct(supabase,
+                salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId
+                )
+
+            if (response) {
+                openNotificationSuccess("Vellykket", "Produktet ble lagt til i databasen")
+            }
+        }
+        catch(error) {
+            console.log(error)
+            openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
         }
     }
 
-    // Handle submit
+    // Executes actions for when the user submits the form for adding a new product
     async function handleSubmit(e) {
         e.preventDefault();
 
@@ -149,15 +130,12 @@ export default function AddProduct({salesLocationId}) {
 
         setLoading(true);
 
-        // Insert product into database
-        //TODO: Insert product into database
         try {
-            await publishProduct()
+            await addProduct()
         }
-       catch (error) {
-        openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
-       }
-
+        catch (error) {
+            openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
+        }
 
         setLoading(false);
     }
