@@ -32,6 +32,9 @@
     background-color: transparent;
     border: 2px solid #eee;
     border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
 }
 
 .leftContainer .navbar .navbarItem {
@@ -65,5 +68,72 @@
 }
 
 .leftContainer .navbar .active {
+    background-color: #F7EDE2;
+}
+
+.leftContainer .navbar .navbarHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 64px;
+    padding: 0 20px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #eee;
+    cursor: pointer;
+    z-index: 2;
+    position: relative;
+    background-color: #fff;
+    border-radius: 10px 10px 0 0;
+}
+
+.leftContainer .navbar .navbarHeader h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.leftContainer .navbar .navbarHeader span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.leftContainer .navbar .navbarSalesLocations {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: absolute;
+    top: -100px;
+    width: 100%;
+    overflow: hidden;
+    left: 0;
+    background-color: #fff;
+    transition: all 0.2s;
+    z-index: 1;
+    border-radius: 0 0 10px 10px;
+    border: 2px solid #fff;
+}
+
+.leftContainer .navbar .navbarSalesLocationsExpanded {
+    top: 64px;
+}
+
+.leftContainer .navbar .navbarSalesLocations .navbarSalesLocation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+.leftContainer .navbar .navbarSalesLocations .navbarSalesLocation:hover {
     background-color: #F7EDE2;
 }

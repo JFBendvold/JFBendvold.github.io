@@ -32,7 +32,7 @@ export default function Home() {
           </p>
           <div className={styles.buttonRow}>
             {!loggedIn &&
-            <Link href="/utselger/registrer"
+            <Link href="/utselger/login"
             className={styles.textButton}>
               Registrer deg som utselger
             </Link>
