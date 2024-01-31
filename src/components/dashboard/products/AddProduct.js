@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, TreeSelect } from 'antd';
+import { formatToTreeData } from '@/utils/CategoryHandler';
 
 export default function AddProduct() {
     const supabase = useSupabaseClient();
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-
+    const [categories, setCategories] = useState([]); 
     // Form data
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState(''); // Can be empty
@@ -18,6 +19,7 @@ export default function AddProduct() {
     const [productStock, setProductStock] = useState(''); // -1 = unlimited
     const [productCategoryId, setProductCategoryId] = useState('');
     const [uploadedImages, setUploadedImages] = useState([]);
+    const [mappedTree, setMappedTree] = useState([]);
 
     // Open add product panel
     async function openAddProductPanel() {
@@ -49,6 +51,42 @@ export default function AddProduct() {
         } else {
             setProductPrice(price);
         }
+    }
+
+    useEffect(() => {
+        setFetchedCategories()
+    }, [])
+
+    async function fetchAllCategories() {
+        let { data: Categories, error } = await supabase
+    .from('Categories')
+    .select('*')
+        
+    setCategories(Categories)
+
+
+    if(error) {
+        console.log(error)
+    }
+    else {
+        console.log("Categories")
+        console.log(Categories)
+    }
+
+    }
+
+    async function setFetchedCategories() {
+        await fetchAllCategories()
+        let sorted = formatToTreeData(categories)
+        let count = 3
+        while (count < 4 && sorted.length == 0)
+        {
+            await fetchAllCategories()
+            count++
+        }
+        console.log(sorted)
+        setMappedTree(sorted)
+
     }
 
     // Handle submit
@@ -133,22 +171,14 @@ export default function AddProduct() {
                             <TreeSelect
                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                 style={{ width: '100%', marginBottom: '1rem' }}
-                                treeData={[
-                                    { title: 'Light', value: 'light', children: [
-                                        { title: 'Street', value: 'street' },
-                                        { title: 'Bulb', value: 'bulb' },
-                                    ]},
-                                    { title: 'Heavy', value: 'heavy', children: [
-                                        { title: 'Street', value: 'street2' },
-                                        { title: 'Bulb', value: 'bulb2' },
-                                    ]},
-                                ]}
+                                treeData={mappedTree}
                                 placeholder="Velg en kategori"
                                 treeDefaultExpandAll
                                 allowClear
                                 showSearch
                                 onChange={(value) => setProductCategoryId(value)}
                             />
+                            {/* <button onClick={checkCurrent}>Fetch</button> */}
                         </div>
                         <div className={styles.inputContainer}>
                             <button className={styles.submitButton} onClick={handleSubmit}>
