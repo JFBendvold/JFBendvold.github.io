@@ -6,6 +6,15 @@ import { openNotificationError, openNotificationSuccess } from '@/utils/Notifica
 import { Spin, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { createBrowserClient } from '@supabase/ssr'
+import { setKey } from 'react-geocode'
+
+// Gets the auth session from Supabase
+const fetchSession = async (client) => {
+    const { data, error } = await client.auth.getSession()
+    if (error) throw error
+    return data
+  } //TODO: change to prop passing
 
 export default function Dashboard() {
     const supabase = useSupabaseClient();
@@ -18,6 +27,10 @@ export default function Dashboard() {
     const [establishment, setEstablishment] = useState(null);
     const [salesLocations, setSalesLocations] = useState(null);
     const [selectedSalesLocation, setSelectedSalesLocation] = useState(null); // id
+    const [client] = useState(createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY))
+    setKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
+    
+    const [authenticated, setAuthenticated] = useState(false)
 
     // Get data from database
     useEffect(() => {
@@ -27,10 +40,15 @@ export default function Dashboard() {
     async function fetchData() {
         setLoading(true);
 
+        try {
+            const session = fetchSession(client)
+            setAuthenticated(session !== null)
+          } catch (error) {
+            console.log(error)
+            openNotificationWarning("Advarsel", "Vennligst prøv igjen senere.")
+          }
+
         await getEstablishment();
-
-
-
 
         setLoading(false);
     }
@@ -42,14 +60,14 @@ export default function Dashboard() {
             .select('*')
             .then(({ data: establishments, error }) => {
                 if (error) {
-                    openNotificationError(error.message);
+                    openNotificationError(error.message)
                 } else {
                     console.log(establishments);
-                    setEstablishment(establishments[0]);
+                    setEstablishment(establishments[0])
 
                     // If no establishment, open create establishment modal
-                    if (establishments.length === 0) {
-                        openCreateEstablishmentModal();
+                    if (establishments.length === 0 && authenticated) {                       
+                        openCreateEstablishmentModal()
                     }
                 }
         });

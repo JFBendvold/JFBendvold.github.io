@@ -8,7 +8,7 @@ import { setKey } from 'react-geocode'
 import { useRouter } from 'next/router'
 import { openNotificationWarning } from '../utils/Notifications'
 
-const publicPages = ["/", "/utselger/login", "/utselger/registrer"]
+const publicPages = ["/", "/utselger", "/utselger/login", "/utselger/registrer"]
 
 // Gets the auth session from Supabase
 const fetchSession = async (client) => {
@@ -50,7 +50,7 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (!publicPages.includes(router.pathname)) {
       if (!authenticated) {
-        executeRedirect(router);
+        executeRedirect(router)
       }
     }
   }, [authenticated, router.pathname])
