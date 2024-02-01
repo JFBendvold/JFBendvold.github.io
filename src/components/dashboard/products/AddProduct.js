@@ -6,8 +6,8 @@ import { openNotificationError, openNotificationSuccess } from '@/utils/Notifica
 import { Spin, TreeSelect } from 'antd';
 import { formatToTreeData } from '@/utils/CategoryHandler'
 import { createProduct } from '@/services/ProductService'
-import { fetchCategories } from '@/services/CategoryService';
-import { v4 as uuidv4 } from 'uuid'
+import { fetchCategories } from '@/services/CategoryService'
+import { postImage, postImageUrl } from '@/services/ImageService'
 
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
@@ -36,12 +36,27 @@ export default function AddProduct({salesLocationId}) {
 
     // Handle upload image
     async function handleUploadImage(e)  {
-        if(uploadedImages.length < 3) {
+        if(uploadedImages.length < 1) {
+            try {
             const imageFile = e.target.files[0];
             setUploadedImages([...uploadedImages, URL.createObjectURL(imageFile)])
+            }
+            catch(error) {
+                openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
+            }
         }
         else {
-            openNotificationError("PS", "Du kan ikke laste opp flere enn 3 bilder")
+            openNotificationError("PS", "Du kan ikke laste opp flere enn 1 bilde")
+        }
+    }
+
+    async function getUserId() {
+        try {
+            const { data: user, error } = await supabase.auth.getUser();
+            return user.user.id
+        }
+        catch(error) {
+            return ''
         }
     }
 
@@ -101,28 +116,23 @@ export default function AddProduct({salesLocationId}) {
 
     async function addProduct() {
         try{
-            const response = await createProduct(supabase,
+            const productId = await createProduct(supabase,
                 salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId
                 )
 
-            if (response) {
-                openNotificationSuccess("Vellykket", "Produktet ble lagt til i databasen")
-            }
-
-            console.log(response)
+            //const productId = response[0].id
 
             for(let i = 0; i < uploadedImages.length; i++) {
                 const image = uploadedImages[i]
-                const location_id = response[0].Sales_location_id
-
-                // const { data, error } = await supabase.storage.from('imgs').upload(location_id + "/" + uuidv4(), image) TODO: FIX THIS
-                if (error) {
-                    openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
-                }
-                else {
-                    console.log(data)
+  
+                const imageId = await postImageUrl(supabase, productId)
+            
+                const userId = await getUserId()
                 
-                }
+                const response = await postImage(supabase, image, imageId, userId)
+
+                if (response) console.log("Bilde(r) lastet opp")
+
             }
         }
         catch(error) {
@@ -182,7 +192,7 @@ export default function AddProduct({salesLocationId}) {
                 <div className={styles.form}>
                     <div className={styles.left}>
                         <div className={styles.imageUploadContainer}>
-                            {uploadedImages.length} / 3
+                            {uploadedImages.length} / 1
                             {uploadedImages.length > 0 && (
                                 <div className={styles.imageUpload}>
                                     {
