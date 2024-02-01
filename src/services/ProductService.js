@@ -15,5 +15,16 @@ export async function createProduct(client, salesLocationId, productName, produc
 
     if (error) throw error
 
-    return CreatedProduct
+    return CreatedProduct[0].id
+}
+
+export async function fetchUserIdFromProductId(client, productId) {
+    let { data: UserId, error } = await supabase
+    .rpc('get_user_id_from_product_id', {
+        product_id: productId
+    })
+
+    if (error) throw error
+
+    return UserId
 }
