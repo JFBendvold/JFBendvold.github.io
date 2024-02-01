@@ -4,13 +4,17 @@ import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, TreeSelect } from 'antd';
+import { formatToTreeData } from '@/utils/CategoryHandler'
+import { createProduct } from '@/services/ProductService'
+import { fetchCategories } from '@/services/CategoryService'
+import { postImage, postImageUrl } from '@/services/ImageService'
 
-export default function AddProduct() {
+export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-
+    const [categories, setCategories] = useState([]); 
     // Form data
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState(''); // Can be empty
@@ -18,6 +22,7 @@ export default function AddProduct() {
     const [productStock, setProductStock] = useState(''); // -1 = unlimited
     const [productCategoryId, setProductCategoryId] = useState('');
     const [uploadedImages, setUploadedImages] = useState([]);
+    const [mappedTree, setMappedTree] = useState([]);
 
     // Open add product panel
     async function openAddProductPanel() {
@@ -30,17 +35,44 @@ export default function AddProduct() {
     }
 
     // Handle upload image
-    async function handleUploadImage()  {
-        alert('Upload image');
-        //TODO: Upload image
+    async function handleUploadImage(e)  {
+        if(uploadedImages.length < 1) {
+            try {
+            const imageFile = e.target.files[0];
+            setUploadedImages([...uploadedImages, URL.createObjectURL(imageFile)])
+            }
+            catch(error) {
+                openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
+            }
+        }
+        else {
+            openNotificationError("PS", "Du kan ikke laste opp flere enn 1 bilde")
+        }
+    }
+
+    async function getUserId() {
+        try {
+            const { data: user, error } = await supabase.auth.getUser();
+            return user.user.id
+        }
+        catch(error) {
+            return ''
+        }
+    }
+
+    function removeImage(index) {
+        let newImages = uploadedImages
+        newImages.splice(index, 1)
+        setUploadedImages([...newImages])
     }
 
     // Handle price change
     async function handlePriceChange(e) {
         const price = e.target.value;
 
-        // Dont allow dot, only comma
+        // Ensures that the user is required to enter a number with comma, not a dot
         if (price.includes('.')) {
+            openNotificationError('Ugyldig pris', 'Tips: forsøk å bruk komma i stedet for punktum');
             return;
         }
 
@@ -51,7 +83,65 @@ export default function AddProduct() {
         }
     }
 
-    // Handle submit
+    useEffect(() => {
+        setFetchedCategories()
+    }, [])
+
+
+    async function setFetchedCategories() {
+        try {
+            let fetchedCategories = await fetchCategories(supabase)
+            let count = 0
+            while (count < 4)
+            {
+                fetchedCategories = await fetchCategories(supabase)
+                if (fetchedCategories && fetchedCategories.length > 0) {
+                    break;
+                }
+                count++
+            }
+
+            if (fetchedCategories && fetchedCategories.length > 0) {
+                let sorted = formatToTreeData(fetchedCategories);
+                setMappedTree(sorted);
+            } else {
+                openNotificationError("Noe gikk galt", "Kategoriene kunne ikke hentes for produktene")
+            }
+        }
+        catch(error) {
+            openNotificationError("Noe gikk galt", "Kategoriene kunne ikke hentes for produktene")
+        }   
+
+    }
+
+    async function addProduct() {
+        try{
+            const productId = await createProduct(supabase,
+                salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId
+                )
+
+            //const productId = response[0].id
+
+            for(let i = 0; i < uploadedImages.length; i++) {
+                const image = uploadedImages[i]
+  
+                const imageId = await postImageUrl(supabase, productId)
+            
+                const userId = await getUserId()
+                
+                const response = await postImage(supabase, image, imageId, userId)
+
+                if (response) console.log("Bilde(r) lastet opp")
+
+            }
+        }
+        catch(error) {
+            console.log(error)
+            openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
+        }
+    }
+
+    // Executes actions for when the user submits the form for adding a new product
     async function handleSubmit(e) {
         e.preventDefault();
 
@@ -77,8 +167,12 @@ export default function AddProduct() {
 
         setLoading(true);
 
-        // Insert product into database
-        //TODO: Insert product into database
+        try {
+            await addProduct()
+        }
+        catch (error) {
+            openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
+        }
 
         setLoading(false);
     }
@@ -98,17 +192,35 @@ export default function AddProduct() {
                 <div className={styles.form}>
                     <div className={styles.left}>
                         <div className={styles.imageUploadContainer}>
-                            {uploadedImages.length > 0 ? (
+                            {uploadedImages.length} / 1
+                            {uploadedImages.length > 0 && (
                                 <div className={styles.imageUpload}>
-                                    <Image src={uploadedImages[0]} width={100} height={100} />
-                                </div>
-                            ) : (
-                                <div className={styles.imageUpload} onClick={handleUploadImage}>
-                                    <span className="material-symbols-outlined">
-                                        add
-                                    </span>
+                                    {
+                                        uploadedImages.map((image, index) => (
+                                            <div key={index} className={styles.imageContainer}>
+                                                <span className="material-symbols-outlined" 
+                                                    onClick={() => removeImage(index)}>
+                                                    close
+                                                </span>
+                                                <Image src={image} width={100} height={100} alt={`opplastet bilde ${index}`}/>
+                                            </div>
+                                        ))
+                                    }
+
                                 </div>
                             )}
+                            
+                            <div className={styles.imageUpload}>
+                                <span className="material-symbols-outlined">
+                                    Image
+                                    <br />
+                                    <input id="image" type="file" accept="image/jpeg" name="image" onChange={
+                                        (e) => {
+                                            handleUploadImage(e)
+                                        }
+                                    }/>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div className={styles.right}>
@@ -133,16 +245,7 @@ export default function AddProduct() {
                             <TreeSelect
                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                 style={{ width: '100%', marginBottom: '1rem' }}
-                                treeData={[
-                                    { title: 'Light', value: 'light', children: [
-                                        { title: 'Street', value: 'street' },
-                                        { title: 'Bulb', value: 'bulb' },
-                                    ]},
-                                    { title: 'Heavy', value: 'heavy', children: [
-                                        { title: 'Street', value: 'street2' },
-                                        { title: 'Bulb', value: 'bulb2' },
-                                    ]},
-                                ]}
+                                treeData={mappedTree}
                                 placeholder="Velg en kategori"
                                 treeDefaultExpandAll
                                 allowClear
