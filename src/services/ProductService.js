@@ -1,3 +1,5 @@
+import { getUserId } from "./UserService"
+
 export async function createProduct(client, salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId) {
     const { data: CreatedProduct, error } = await client
     .from('Products')
@@ -18,15 +20,14 @@ export async function createProduct(client, salesLocationId, productName, produc
     return CreatedProduct[0].id
 }
 
-export async function fetchProduct(client, userId) {
-    const { data: Product, error } = await client
+export async function fetchProducts(client) {
+    const { data: Products, error } = await client
     .from('Products')
-    .select()
-    .eq('id', productId)
+    .select('*')
 
     if (error) throw error
 
-    return Product
+    return Products
 }
 
 export async function fetchUserIdFromProductId(client, productId) {
