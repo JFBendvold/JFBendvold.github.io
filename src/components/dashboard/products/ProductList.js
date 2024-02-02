@@ -7,12 +7,15 @@ import { Spin, Modal } from 'antd';
 export default function ProductList() {
     const supabase = useSupabaseClient();
     const [loading, setLoading] = useState(false);
-
     const [search, setSearch] = useState('');
+    const [products, setProducts] = useState([]);
+
+    // Fetch products
+    
 
     return (
         <div className={styles.container}>
-            <h1>ProductList</h1>
+            <h1>Registrerte produkter</h1>
         </div>
     );
 }

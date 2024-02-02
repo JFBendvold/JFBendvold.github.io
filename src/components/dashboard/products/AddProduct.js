@@ -8,6 +8,7 @@ import { formatToTreeData } from '@/utils/CategoryHandler'
 import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
 import { getImage, postImage, postImageUrl } from '@/services/ImageService'
+import { getUserId } from '@/services/UserService';
 
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
@@ -50,16 +51,6 @@ export default function AddProduct({salesLocationId}) {
         }
         else {
             openNotificationError("PS", "Du kan ikke laste opp flere enn 1 bilde")
-        }
-    }
-
-    async function getUserId() {
-        try {
-            const { data: user, error } = await supabase.auth.getUser();
-            return user.user.id
-        }
-        catch(error) {
-            return ''
         }
     }
 
@@ -128,7 +119,7 @@ export default function AddProduct({salesLocationId}) {
             for(let i = 0; i < uploadedImages.length; i++) {
                 const image = uploadedImages[i]
   
-                const userId = await getUserId()
+                const userId = await getUserId(supabase)
                 const imageId = await postImageUrl(supabase, userId, productId)
             
                 
