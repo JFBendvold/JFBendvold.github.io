@@ -7,7 +7,7 @@ import { Spin, TreeSelect } from 'antd';
 import { formatToTreeData } from '@/utils/CategoryHandler'
 import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
-import { postImage, postImageUrl } from '@/services/ImageService'
+import { getImage, postImage, postImageUrl } from '@/services/ImageService'
 
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
@@ -24,6 +24,7 @@ export default function AddProduct({salesLocationId}) {
     const [uploadedImages, setUploadedImages] = useState([]);
     const [mappedTree, setMappedTree] = useState([]);
     const [imageDisplay, setImageDisplay] = useState([]);
+    const [fetchedImage, setFetchedImage] = useState("");
 
     // Open add product panel
     async function openAddProductPanel() {
@@ -133,6 +134,15 @@ export default function AddProduct({salesLocationId}) {
                 
                 const response = await postImage(supabase, image, imageId, userId)
 
+
+                const fetchedImage = await getImage(supabase, imageId, userId)
+
+                console.log(fetchedImage)
+                console.log("This is the fetched image^^")
+                setFetchedImage(fetchedImage)
+
+                
+
                 if (response) console.log("Bilde(r) lastet opp")
 
             }
@@ -222,6 +232,8 @@ export default function AddProduct({salesLocationId}) {
                                         }
                                     }/>
                                 </span>
+
+                                {fetchedImage && <Image src={fetchedImage} width={100} height={100} alt={`nedlastet bilde`}/>}
                             </div>
                         </div>
                     </div>
