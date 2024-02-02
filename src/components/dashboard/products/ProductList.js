@@ -4,6 +4,7 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, Modal } from 'antd';
 import { fetchProducts } from '@/services/ProductService';
+import Product from './Product';
 
 export default function ProductList() {
     const supabase = useSupabaseClient();
@@ -36,13 +37,7 @@ export default function ProductList() {
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
-                        <div key={index} className={styles.productItemContainer}>
-                            <p>Artikkelnavn: {product.product_name}</p>
-                            <p>Pris: {product.price}</p>
-                            <p>Beskrivelse: {product.product_descpription}</p>
-                            <p>Antall: {product.quantity}</p>
-
-                        </div>
+                        <Product key={index} KeyIndex={index} ProdInfo={product}/>
                     ))}
                 </div>
             )}
