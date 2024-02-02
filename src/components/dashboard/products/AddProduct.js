@@ -23,6 +23,7 @@ export default function AddProduct({salesLocationId}) {
     const [productCategoryId, setProductCategoryId] = useState('');
     const [uploadedImages, setUploadedImages] = useState([]);
     const [mappedTree, setMappedTree] = useState([]);
+    const [imageDisplay, setImageDisplay] = useState([]);
 
     // Open add product panel
     async function openAddProductPanel() {
@@ -39,7 +40,8 @@ export default function AddProduct({salesLocationId}) {
         if(uploadedImages.length < 1) {
             try {
             const imageFile = e.target.files[0];
-            setUploadedImages([...uploadedImages, URL.createObjectURL(imageFile)])
+            setUploadedImages([...uploadedImages, imageFile])
+            setImageDisplay([...imageDisplay, URL.createObjectURL(imageFile)])
             }
             catch(error) {
                 openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
@@ -192,11 +194,11 @@ export default function AddProduct({salesLocationId}) {
                 <div className={styles.form}>
                     <div className={styles.left}>
                         <div className={styles.imageUploadContainer}>
-                            {uploadedImages.length} / 1
-                            {uploadedImages.length > 0 && (
+                            {imageDisplay.length} / 1
+                            {imageDisplay.length > 0 && (
                                 <div className={styles.imageUpload}>
                                     {
-                                        uploadedImages.map((image, index) => (
+                                        imageDisplay.map((image, index) => (
                                             <div key={index} className={styles.imageContainer}>
                                                 <span className="material-symbols-outlined" 
                                                     onClick={() => removeImage(index)}>
