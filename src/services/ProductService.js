@@ -18,6 +18,17 @@ export async function createProduct(client, salesLocationId, productName, produc
     return CreatedProduct[0].id
 }
 
+export async function fetchProduct(client, userId) {
+    const { data: Product, error } = await client
+    .from('Products')
+    .select()
+    .eq('id', productId)
+
+    if (error) throw error
+
+    return Product
+}
+
 export async function fetchUserIdFromProductId(client, productId) {
     let { data: UserId, error } = await supabase
     .rpc('get_user_id_from_product_id', {
