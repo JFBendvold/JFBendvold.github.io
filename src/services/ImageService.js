@@ -6,8 +6,8 @@ export async function postImage(client, image, productId, userId){ //TODO: COMMM
     return UploadedImage
 }
 
-export async function postImageUrl(client, productId) {
-    const {data: AddedURL, error } = await client.from('Images').insert([{url: productId + "/", parent_id: productId}]).select()
+export async function postImageUrl(client, userId, productId) {
+    const {data: AddedURL, error } = await client.from('Images').insert([{url: userId + "/", parent_id: productId}]).select()
 
     if (error) throw error
 

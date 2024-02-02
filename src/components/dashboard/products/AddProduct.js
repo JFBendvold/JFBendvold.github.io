@@ -125,9 +125,9 @@ export default function AddProduct({salesLocationId}) {
             for(let i = 0; i < uploadedImages.length; i++) {
                 const image = uploadedImages[i]
   
-                const imageId = await postImageUrl(supabase, productId)
-            
                 const userId = await getUserId()
+                const imageId = await postImageUrl(supabase, userId, productId)
+            
                 
                 const response = await postImage(supabase, image, imageId, userId)
 
