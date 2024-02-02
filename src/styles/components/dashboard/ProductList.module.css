@@ -17,6 +17,8 @@
     align-items: center;
     width: 100%;
     padding: 1rem;
+    max-height: 80vh;
+    overflow-y: auto; 
 }
 
 .productItemContainer {

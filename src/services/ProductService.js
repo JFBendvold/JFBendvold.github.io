@@ -20,10 +20,10 @@ export async function createProduct(client, salesLocationId, productName, produc
     return CreatedProduct[0].id
 }
 
-export async function fetchProducts(client) {
+export async function fetchProducts(client, location_id) {
     const { data: Products, error } = await client
     .from('Products')
-    .select('*')
+    .select('*').eq('Sales_location_id', location_id)
 
     if (error) throw error
 
