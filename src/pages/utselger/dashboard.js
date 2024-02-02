@@ -2,21 +2,19 @@ import styles from '@/styles/utselger/dashboard.module.css';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
+import { openNotificationError, openNotificationWarning } from '@/utils/Notifications';
 import { Spin, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import ProductList from '@/components/dashboard/products/ProductList';
 import AddProduct from '@/components/dashboard/products/AddProduct';
-import { createBrowserClient } from '@supabase/ssr'
-import { setKey } from 'react-geocode'
 
 // Gets the auth session from Supabase
 const fetchSession = async (client) => {
     const { data, error } = await client.auth.getSession()
     if (error) throw error
     return data
-} //TODO: change to prop passing
+}
 
 export default function Dashboard() {
     const supabase = useSupabaseClient();
@@ -28,12 +26,8 @@ export default function Dashboard() {
     // User variables
     const [establishment, setEstablishment] = useState(null);
     const [salesLocations, setSalesLocations] = useState(null);
-    const [selectedSalesLocation, setSelectedSalesLocation] = useState(null); // id
-    const [client] = useState(createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY))
-    setKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
-    
+    const [selectedSalesLocation, setSelectedSalesLocation] = useState(null);     
     const [authenticated, setAuthenticated] = useState(false)
-    const [salesLocationId, setSalesLocatio] = useState(null)
 
     // Page variables
     const [expandedSalesLocations, setExpandedSalesLocations] = useState(false);
@@ -55,14 +49,10 @@ export default function Dashboard() {
         }
         
         try {
-            const session = await fetchSession(client)
-            console.log("session")
-            console.log(session)
-            setAuthenticated(session.session.access_token !== null) //TODO: eval
-            console.log("authenticated")
+            const session = await fetchSession(supabase)
+            setAuthenticated(session.session.access_token !== null)
 
           } catch (error) {
-            console.log(error)
             openNotificationWarning("Advarsel", "Vennligst prøv igjen senere.")
           }
 
