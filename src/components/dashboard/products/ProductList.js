@@ -97,7 +97,7 @@ export default function ProductList() {
                 </div>
             )}
             <div className={styles.paginationContainer}>
-                <p>Viser produkter {currentLower + 1} til {currentLower + 10}</p>
+                <p>{currentLower + 1} til {currentLower + 10}</p>
                 {currentLower !== 0 && <button onClick={prevPage}>Forrige</button>}
                 {currentLower + 10 <= upperBound && <button onClick={nextPage}>Neste</button> }
             </div>
@@ -106,7 +106,7 @@ export default function ProductList() {
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
-                        <Product key={index} KeyIndex={index} ProdInfo={product}/>
+                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase}/>
                     ))}
                 </div>
             )}

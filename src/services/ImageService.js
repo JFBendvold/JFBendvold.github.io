@@ -13,6 +13,13 @@ export async function getImage(client, imageId, userId) {
     return Image.publicUrl
 }
 
+export async function getImageByUrl(client, url) {
+    const { data: Image, error } = await client.storage.from('imgs').getPublicUrl(url)
+
+    if (error) throw error
+    return Image.publicUrl
+}
+
 export async function postImageUrl(client, userId, productId) {
     const {data: AddedURL, error } = await client.from('Images').insert([{url: userId + "/", parent_id: productId}]).select()
 
