@@ -28,3 +28,14 @@ export async function postImageUrl(client, userId, productId) {
     return AddedURL[0].id
 
 }
+
+export async function fetchImagesUrls(client, productId) {
+    let { data: Images, error } = await client
+    .from('Images')
+    .select("*")
+    .eq('parent_id', productId)
+
+    if (error) throw error
+
+    return Images
+}

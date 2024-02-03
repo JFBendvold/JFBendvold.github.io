@@ -36,10 +36,6 @@ export default function ProductList() {
         fetchLocations()
     }, [])
 
-    // useEffect(() => {
-    //     console.log(locationList)
-    // }, [locationList]);
-
     const nextPage = () => {
         setCurrentLower(currentLower + 10)
     }
@@ -55,12 +51,10 @@ export default function ProductList() {
 
     const fetchAllProducts = async () => {
         if (!selectedLocationId) {
-            // console.log("selectedLocationId is not set yet");
             setLoading(false); 
             return; 
         }
         setLoading(true)
-        // console.log("Trying to fetch products for location: " + selectedLocationId)
         try {
             const prods = await fetchProducts(supabase, selectedLocationId, currentLower, currentLower + 9)
             setProducts(prods)
@@ -79,10 +73,6 @@ export default function ProductList() {
         fetchAllProducts()
     }, [currentLower])
 
-    // useEffect(() => {
-    //     console.log(products)
-    // }, [products]);
-
     return (
         <div className={styles.productContainer}>
             <h1>Registrerte produkter</h1>
@@ -97,9 +87,9 @@ export default function ProductList() {
                 </div>
             )}
             <div className={styles.paginationContainer}>
-                <p>{currentLower + 1} til {currentLower + 10}</p>
-                {currentLower !== 0 && <button onClick={prevPage}>Forrige</button>}
-                {currentLower + 10 <= upperBound && <button onClick={nextPage}>Neste</button> }
+                <p className={styles.intervalText}>{currentLower + 1} til {currentLower + 10}</p>
+                <button onClick={prevPage} disabled={currentLower === 0}>Forrige</button>
+                <button onClick={nextPage} disabled={currentLower + 11 > upperBound}>Neste</button>
             </div>
             {loading && <Spin />}
             {products.length === 0 && !loading && <p>Ingen produkter registrert</p>}

@@ -1,7 +1,7 @@
 import styles from '@/styles/components/dashboard/ProductList.module.css';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getImageByUrl } from '@/services/ImageService';
+import { getImageByUrl, fetchImagesUrls } from '@/services/ImageService';
 
 export default function Product({ KeyIndex, ProdInfo, client }) {
 
@@ -9,33 +9,24 @@ export default function Product({ KeyIndex, ProdInfo, client }) {
     
 
     const fetchProductImages = async () => {
-        console.log("ProdInfo.id")
-        console.log(ProdInfo.id)
-        let { data: Image, error } = await client
-        .from('Images')
-        .select("*")
-        .eq('parent_id', ProdInfo.id)
-
         try {
-        if (Image && Image.length > 0) {
-            let urls = []
-            for (let i = 0; i < Image.length; i++) {
-                urls.push(await getImageByUrl(client, Image[i].url))
-            }
+            let imagesUrlsFetched = await fetchImagesUrls(client, ProdInfo.id);
 
-            if (urls.length > 0) {
-                setProductImages(urls);
+            if (imagesUrlsFetched && imagesUrlsFetched.length > 0) {
+                let urls = []
+                for (let i = 0; i < imagesUrlsFetched.length; i++) {
+                    urls.push(await getImageByUrl(client, imagesUrlsFetched[i].url))
+                }
+
+                if (urls.length > 0) {
+                    setProductImages(urls);
+                }
+                
             }
-            
-        }
         }
         catch (error) {
             console.error('Error fetching product image:', error.message);
         }
-
-        if (error)
-            console.error('Error fetching product image:', error.message);
-
     }
 
     useEffect(() => {
@@ -55,10 +46,10 @@ export default function Product({ KeyIndex, ProdInfo, client }) {
                     />
                 ))
             }
-            <p>Produktnavn: {ProdInfo.product_name}</p>
-            <p>Pris: {ProdInfo.price}</p>
-            <p>Beskrivelse: {ProdInfo.product_descpription}</p>
-            <p>Antall: {ProdInfo.quantity}</p>
+            <p><b>Produktnavn:</b> {ProdInfo.product_name}</p>
+            <p><b>Pris:</b> {ProdInfo.price} kr</p>
+            <p><b>Beskrivelse:</b> {ProdInfo.product_description}</p>
+            <p><b>Antall:</b> {ProdInfo.quantity === -1 ? 'Ubegrenset': ProdInfo.quantity + ' stk'}</p>
 
         </div>
     );
