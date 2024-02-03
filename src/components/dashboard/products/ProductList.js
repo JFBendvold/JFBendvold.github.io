@@ -30,6 +30,9 @@ export default function ProductList() {
         } else if (error) {
             console.error('Error fetching locations:', error.message);
         }
+        else if (error1) {
+            console.error('Error fetching establishments:', error1.message);
+        }
     }
 
     useEffect(() => {
@@ -67,7 +70,7 @@ export default function ProductList() {
 
     useEffect(() => {
         fetchAllProducts()
-    }, [selectedLocationId])
+    }, [selectedLocationId, upperBound])
 
     useEffect(() => {
         fetchAllProducts()

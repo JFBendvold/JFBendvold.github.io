@@ -9,13 +9,11 @@ import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
 import { getImage, postImage, postImageUrl } from '@/services/ImageService'
 import { getUserId } from '@/services/UserService';
-
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [categories, setCategories] = useState([]); 
     // Form data
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState(''); // Can be empty
@@ -25,16 +23,27 @@ export default function AddProduct({salesLocationId}) {
     const [uploadedImages, setUploadedImages] = useState([]);
     const [mappedTree, setMappedTree] = useState([]);
     const [imageDisplay, setImageDisplay] = useState([]);
-    const [fetchedImage, setFetchedImage] = useState("");
 
     // Open add product panel
     async function openAddProductPanel() {
         setLoading(true);
 
+        resetForm();
+
         //TODO: Fetch tags
 
         setOpen(true);
         setLoading(false);
+    }
+
+    function resetForm() {
+        setProductName('');
+        setProductDescription('');
+        setProductPrice('');
+        setProductStock('');
+        setProductCategoryId('');
+        setUploadedImages([]);
+        setImageDisplay([]);
     }
 
     // Handle upload image
@@ -57,7 +66,10 @@ export default function AddProduct({salesLocationId}) {
     function removeImage(index) {
         let newImages = uploadedImages
         newImages.splice(index, 1)
+        let newImageDisplay = imageDisplay
+        newImageDisplay.splice(index, 1)
         setUploadedImages([...newImages])
+        setImageDisplay([...newImageDisplay])
     }
 
     // Handle price change
@@ -110,11 +122,14 @@ export default function AddProduct({salesLocationId}) {
 
     async function addProduct() {
         try{
+            if(uploadedImages.length < 1) {
+
+                openNotificationError("Bilde mangler", "Du må laste opp et bilde for å legge til et produkt")
+                return;
+            }
             const productId = await createProduct(supabase,
                 salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId
                 )
-
-            //const productId = response[0].id
 
             for(let i = 0; i < uploadedImages.length; i++) {
                 const image = uploadedImages[i]
@@ -125,16 +140,11 @@ export default function AddProduct({salesLocationId}) {
                 
                 const response = await postImage(supabase, image, imageId, userId)
 
-
-                const fetchedImage = await getImage(supabase, imageId, userId)
-
-                console.log(fetchedImage)
-                console.log("This is the fetched image^^")
-                setFetchedImage(fetchedImage)
-
-                
-
-                if (response) console.log("Bilde(r) lastet opp")
+                if (response) {
+                    openNotificationSuccess("Produktet ble lagt til", "Produktet ble lagt til i databasen")
+                    resetForm()
+                    setOpen(false);
+                }
 
             }
         }
@@ -223,8 +233,6 @@ export default function AddProduct({salesLocationId}) {
                                         }
                                     }/>
                                 </span>
-
-                                {fetchedImage && <Image src={fetchedImage} width={100} height={100} alt={`nedlastet bilde`}/>}
                             </div>
                         </div>
                     </div>
@@ -248,13 +256,14 @@ export default function AddProduct({salesLocationId}) {
                         <div className={styles.inputContainer}>
                             <label className={styles.label}>Kategori</label>
                             <TreeSelect
-                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                dropdownStyle={{ maxHeight: 250, overflow: 'auto' }}
                                 style={{ width: '100%', marginBottom: '1rem' }}
                                 treeData={mappedTree}
                                 placeholder="Velg en kategori"
                                 treeDefaultExpandAll
                                 allowClear
                                 showSearch
+                                value={productCategoryId}
                                 onChange={(value) => setProductCategoryId(value)}
                             />
                         </div>
