@@ -13,6 +13,13 @@ export async function getImage(client, imageId, userId) {
     return Image.publicUrl
 }
 
+export async function getImageByUrl(client, url) {
+    const { data: Image, error } = await client.storage.from('imgs').getPublicUrl(url)
+
+    if (error) throw error
+    return Image.publicUrl
+}
+
 export async function postImageUrl(client, userId, productId) {
     const {data: AddedURL, error } = await client.from('Images').insert([{url: userId + "/", parent_id: productId}]).select()
 
@@ -20,4 +27,15 @@ export async function postImageUrl(client, userId, productId) {
 
     return AddedURL[0].id
 
+}
+
+export async function fetchImagesUrls(client, productId) {
+    let { data: Images, error } = await client
+    .from('Images')
+    .select("*")
+    .eq('parent_id', productId)
+
+    if (error) throw error
+
+    return Images
 }

@@ -20,14 +20,30 @@ export async function createProduct(client, salesLocationId, productName, produc
     return CreatedProduct[0].id
 }
 
-export async function fetchProducts(client, location_id) {
+export async function fetchProducts(client, location_id, lowerBound, upperBound) {
     const { data: Products, error } = await client
     .from('Products')
-    .select('*').eq('Sales_location_id', location_id)
+    .select('*')
+    .order('id', { ascending: true })
+    .range(lowerBound, upperBound)
+    .eq('Sales_location_id', location_id)
 
     if (error) throw error
 
     return Products
+}
+
+export async function fetchProductAmount(client, location_id)
+{
+    const { data: TotalCount, error } = await client
+  .from('Products')
+  .select('id', { count: 'exact' })
+  .eq('Sales_location_id', location_id)
+
+    if (error) throw error
+
+    return TotalCount.length
+
 }
 
 export async function fetchUserIdFromProductId(client, productId) {
