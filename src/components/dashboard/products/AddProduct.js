@@ -7,7 +7,7 @@ import { Spin, TreeSelect } from 'antd';
 import { formatToTreeData } from '@/utils/CategoryHandler'
 import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
-import { getImage, postImage, postImageUrl } from '@/services/ImageService'
+import { postImage, postImageUrl } from '@/services/ImageService'
 import { getUserId } from '@/services/UserService';
 export default function AddProduct({salesLocationId}) {
     const supabase = useSupabaseClient();
@@ -27,11 +27,7 @@ export default function AddProduct({salesLocationId}) {
     // Open add product panel
     async function openAddProductPanel() {
         setLoading(true);
-
         resetForm();
-
-        //TODO: Fetch tags
-
         setOpen(true);
         setLoading(false);
     }
@@ -264,6 +260,7 @@ export default function AddProduct({salesLocationId}) {
                                 allowClear
                                 showSearch
                                 value={productCategoryId}
+                                treeNodeFilterProp='title'
                                 onChange={(value) => setProductCategoryId(value)}
                             />
                         </div>

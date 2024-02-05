@@ -24,7 +24,7 @@ export async function fetchProducts(client, location_id, lowerBound, upperBound)
     const { data: Products, error } = await client
     .from('Products')
     .select('*')
-    .order('id', { ascending: true })
+    .order('updated_at', { ascending: false })
     .range(lowerBound, upperBound)
     .eq('Sales_location_id', location_id)
 
