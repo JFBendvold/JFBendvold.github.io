@@ -1,5 +1,3 @@
-import { getUserId } from "./UserService"
-
 export async function createProduct(client, salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId) {
     const { data: CreatedProduct, error } = await client
     .from('Products')
@@ -47,7 +45,7 @@ export async function fetchProductAmount(client, location_id)
 }
 
 export async function fetchUserIdFromProductId(client, productId) {
-    let { data: UserId, error } = await supabase
+    let { data: UserId, error } = await client
     .rpc('get_user_id_from_product_id', {
         product_id: productId
     })
@@ -55,4 +53,17 @@ export async function fetchUserIdFromProductId(client, productId) {
     if (error) throw error
 
     return UserId
+}
+
+export async function unlistProduct(client, productId) {
+    let { data, error } = await client
+    .rpc('set_product_unlisted_at', {
+      p_product_id: productId
+    })
+  if (error) throw error
+
+  console.log("DATA")
+  console.log(data)
+
+  return data;
 }

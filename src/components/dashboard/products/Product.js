@@ -2,12 +2,12 @@ import styles from '@/styles/components/dashboard/ProductList.module.css';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getImageByUrl, fetchImagesUrls } from '@/services/ImageService';
+import { unlistProduct } from '@/services/ProductService';
 
 export default function Product({ KeyIndex, ProdInfo, client }) {
 
     const [productImages, setProductImages] = useState('');
     
-
     const fetchProductImages = async () => {
         try {
             let imagesUrlsFetched = await fetchImagesUrls(client, ProdInfo.id);
@@ -26,6 +26,17 @@ export default function Product({ KeyIndex, ProdInfo, client }) {
         }
         catch (error) {
             console.error('Error fetching product image:', error.message);
+        }
+    }
+
+    //TODO: add later when RLS is decided on - which users should be able to unlist products?
+    const executeUnlistProduct = async () => {
+        console.log('Unlisting product:', ProdInfo)
+        try {
+            const response = await unlistProduct(client, ProdInfo.id);
+        }
+        catch (error) {
+            console.error('Error unlisting product:', error.message);
         }
     }
 
@@ -50,7 +61,7 @@ export default function Product({ KeyIndex, ProdInfo, client }) {
             <p><b>Pris:</b> {ProdInfo.price} kr</p>
             <p><b>Beskrivelse:</b> {ProdInfo.product_description}</p>
             <p><b>Antall:</b> {ProdInfo.quantity === -1 ? 'Ubegrenset': ProdInfo.quantity + ' stk'}</p>
-
+            <button className={styles.unlistButton} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>
         </div>
     );
 }
