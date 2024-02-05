@@ -260,6 +260,7 @@ export default function AddProduct({salesLocationId}) {
                                 allowClear
                                 showSearch
                                 value={productCategoryId}
+                                treeNodeFilterProp='title'
                                 onChange={(value) => setProductCategoryId(value)}
                             />
                         </div>
