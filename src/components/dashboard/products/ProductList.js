@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, Modal } from 'antd';
-import { fetchProducts, fetchProductAmount } from '@/services/ProductService';
+import { fetchProducts, fetchProductAmount, searchProducts } from '@/services/ProductService';
 import Product from './Product';
 
 export default function ProductList() {
@@ -24,8 +24,6 @@ export default function ProductList() {
             setLocationList(data);
             if(data[0].id){
                 setSelectedLocationId(data[0].id);
-                const fetchedUpperBound = await fetchProductAmount(supabase, data[0].id)
-                setUpperBound(fetchedUpperBound)
             } 
         } else if (error) {
             console.error('Error fetching locations:', error.message);
@@ -52,15 +50,38 @@ export default function ProductList() {
     }
 
 
-    const fetchAllProducts = async () => {
+    const fetchAllProducts = async () => { //TODO: reset count
         if (!selectedLocationId) {
             setLoading(false); 
             return; 
         }
         setLoading(true)
         try {
-            const prods = await fetchProducts(supabase, selectedLocationId, currentLower, currentLower + 9)
+            const fetchedUpperBound = await fetchProductAmount(supabase, search, selectedLocationId)
+            setUpperBound(fetchedUpperBound)
+            let prods;
+            if(search.length > 0){
+                prods = await searchProducts(supabase, search, selectedLocationId, currentLower, currentLower + 9)
+                setCurrentLower(0)
+            }
+            else{
+                prods = await fetchProducts(supabase, selectedLocationId, currentLower, currentLower + 9)
+            }
+           
             setProducts(prods)
+            setLoading(false)
+        }
+        catch (error) {
+            console.error('Error fetching products:', error.message);
+        }
+    }
+
+    const searchForProducts = async (searchKeyword) => {
+        setSearch(searchKeyword)
+        setLoading(true)
+        try {
+            const products = await searchProducts(supabase, searchKeyword, selectedLocationId, currentLower, currentLower + 9)
+            setProducts(products)
             setLoading(false)
         }
         catch (error) {
@@ -70,11 +91,8 @@ export default function ProductList() {
 
     useEffect(() => {
         fetchAllProducts()
-    }, [selectedLocationId, upperBound])
+    }, [selectedLocationId, upperBound, currentLower, search])
 
-    useEffect(() => {
-        fetchAllProducts()
-    }, [currentLower])
 
     return (
         <div className={styles.productContainer}>
@@ -89,13 +107,17 @@ export default function ProductList() {
                     </select>
                 </div>
             )}
+            <div>
+                <label htmlFor="search">Søk opp produkt</label>
+                <input type="text" id="search" name="search" onChange={(e) => searchForProducts(e.target.value)} />
+            </div>
             <div className={styles.paginationContainer}>
                 <p className={styles.intervalText}>{currentLower + 1} til {currentLower + 10}</p>
                 <button onClick={prevPage} disabled={currentLower === 0}>Forrige</button>
                 <button onClick={nextPage} disabled={currentLower + 11 > upperBound}>Neste</button>
             </div>
             {loading && <Spin />}
-            {products.length === 0 && !loading && <p>Ingen produkter registrert</p>}
+            {products.length === 0 && !loading && <p>Ingen produkter</p>}
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
