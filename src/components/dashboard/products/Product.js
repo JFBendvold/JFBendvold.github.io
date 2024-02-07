@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getImageByUrl, fetchImagesUrls } from '@/services/ImageService';
 import { unlistProduct } from '@/services/ProductService';
+import EditProduct from './EditProduct';
 
-export default function Product({ KeyIndex, ProdInfo, client }) {
+export default function Product({ KeyIndex, ProdInfo, client, salesLocationId }) {
 
     const [productImages, setProductImages] = useState('');
     
@@ -63,7 +64,7 @@ export default function Product({ KeyIndex, ProdInfo, client }) {
             <p><b>Antall:</b> {ProdInfo.quantity === -1 ? 'Ubegrenset': ProdInfo.quantity + ' stk'}</p>
             <div className={styles.buttonContainer}>
                 <button className={styles.productButton} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>
-                <button className={styles.productButton}>Rediger produkt</button>
+                <EditProduct product={ProdInfo} client={client} salesLocationId={salesLocationId} productImages={productImages} />
             </div>
         </div>
     );

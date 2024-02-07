@@ -5,7 +5,7 @@ export async function createProduct(client, salesLocationId, productName, produc
     .from('Products')
     .insert([
         {
-            Sales_location_id: salesLocationId,
+            sales_location_id: salesLocationId,
             product_name: productName,
             product_description: productDescription,
             price: productPrice,
@@ -18,6 +18,24 @@ export async function createProduct(client, salesLocationId, productName, produc
     if (error) throw error
 
     return CreatedProduct[0].id
+}
+
+export async function updateProduct(client, productId, productName, productDescription, productPrice, productStock, productCategoryId) {
+    const { data: UpdatedProduct, error } = await client
+    .from('Products')
+    .update({
+        product_name: productName,
+        product_description: productDescription,
+        price: productPrice,
+        quantity: productStock,
+        category_id: productCategoryId
+    })
+    .eq('id', productId)
+    .select()
+
+    if (error) throw error
+
+    return UpdatedProduct[0].id
 }
 
 export async function fetchProducts(client, location_id, lowerBound, upperBound) {
@@ -74,23 +92,15 @@ export async function fetchUserIdFromProductId(client, productId) {
 }
 
 export async function unlistProduct(client, productId) { //TODO: make this work
-//     let { data, error } = await client
-//     .rpc('set_product_unlisted_at', {
-//       p_product_id: productId
-//     })
-//   if (error) throw error
-
-//   console.log("DATA")
-//   console.log(data)
-
     let { data, error } = await client
-    .from('Products')
-    .update({ unlisted_at: 'NOW()' })
-    .eq('id', productId);
-    if (error) throw error;
-    console.log("Direct Update Data:", data);
+        .rpc('set_product_unlisted_at', {
+        p_product_id: productId
+    })
+    if (error) throw error
 
-  return data;
+    console.log("DATA")
+    console.log(data)
+
 }
 
 

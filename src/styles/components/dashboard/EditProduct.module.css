@@ -2,24 +2,23 @@
     
 }
 
-.addButton {
-    outline: none;
-    border: none;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    margin: 1rem;
+.editButton {
+    background-color: #ffffff;
     padding: 0.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-    background-color: #848aa5;
+    margin: 0.5rem;
+    border-radius: 5px;
 }
 
-.addButton:hover {
+.editButton:hover {
+    opacity: 0.8;
+    background-color: #90d194;
+}
+
+.editButton:hover {
     opacity: 0.8;
 }
 
-.addButton span {
+.editButton span {
     font-size: 2rem;
     color: #fff;
 }

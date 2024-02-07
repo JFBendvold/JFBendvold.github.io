@@ -1,8 +1,7 @@
 import styles from '@/styles/components/dashboard/ProductList.module.css';
 import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
-import { Spin, Modal } from 'antd';
+import { Spin } from 'antd';
 import { fetchProducts, fetchProductAmount, searchProducts } from '@/services/ProductService';
 import { fetchEstablishmentsIds } from '@/services/EstablishmentService';
 import { fetchLocationsByEstablishmentId } from '@/services/LocationService';
@@ -131,7 +130,7 @@ export default function ProductList() {
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
-                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase}/>
+                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId}/>
                     ))}
                 </div>
             )}
