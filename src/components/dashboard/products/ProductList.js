@@ -35,14 +35,7 @@ export default function ProductList() {
         }
     }
 
-    const test = async () => {
-        const { data: { user } } = await supabase.auth.getUser()
-        console.log(user) 
-    }
-
     useEffect(() => {
-        console.log('Fetching user')
-        test()
         fetchLocations()
     }, [])
 
@@ -59,7 +52,7 @@ export default function ProductList() {
     }
 
 
-    const fetchAllProducts = async () => { //TODO: reset count
+    const fetchAllProducts = async () => {
         if (!selectedLocationId) {
             setLoading(false); 
             return; 
@@ -98,6 +91,10 @@ export default function ProductList() {
         }
     }
 
+    const handleChildAction = async () => {
+        await fetchAllProducts()
+    };
+
     useEffect(() => {
         fetchAllProducts()
     }, [selectedLocationId, upperBound, currentLower, search])
@@ -130,7 +127,7 @@ export default function ProductList() {
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
-                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId}/>
+                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId} onAction={handleChildAction}/>
                     ))}
                 </div>
             )}

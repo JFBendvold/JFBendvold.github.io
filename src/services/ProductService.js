@@ -91,7 +91,7 @@ export async function fetchUserIdFromProductId(client, productId) {
     return UserId
 }
 
-export async function unlistProduct(client, productId) { //TODO: make this work
+export async function unlistProduct(client, productId) {
     let { data, error } = await client
         .rpc('set_product_unlisted_at', {
         p_product_id: productId
@@ -101,6 +101,20 @@ export async function unlistProduct(client, productId) { //TODO: make this work
     console.log("DATA")
     console.log(data)
 
+}
+
+export async function listProduct(client, productId) {
+    const { data: UpdatedProduct, error } = await client
+    .from('Products')
+    .update({
+        unlisted_at: null,
+    })
+    .eq('id', productId)
+    .select()
+
+    if (error) throw error
+
+    return UpdatedProduct[0].id
 }
 
 

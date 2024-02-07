@@ -25,7 +25,7 @@ export default function EditProduct({product, client, salesLocationId, productIm
     const [originalImageUrls, setOriginalImageUrls] = useState([]);
 
     // Open add product panel
-    async function openAddProductPanel() {
+    async function openEditProductPanel() {
         setLoading(true);
         setForm();
         try {
@@ -58,10 +58,6 @@ export default function EditProduct({product, client, salesLocationId, productIm
         setImageDisplay(productImages);
         
     }
-
-    useEffect(() => {
-        console.log(shouldRemoveImage)
-    }, [shouldRemoveImage])
 
     // Handle upload image
     async function handleUploadImage(e)  {
@@ -240,7 +236,7 @@ export default function EditProduct({product, client, salesLocationId, productIm
 
     return (
         <div className={styles.container}>
-            <button className={styles.editButton} onClick={openAddProductPanel}>
+            <button className={styles.editButton} onClick={openEditProductPanel}>
                 Endre produkt
             </button>
             <div className={`${styles.panel} ${open ? styles.open : ''}`}>

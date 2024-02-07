@@ -2,10 +2,10 @@ import styles from '@/styles/components/dashboard/ProductList.module.css';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getImageByUrl, fetchImagesUrls } from '@/services/ImageService';
-import { unlistProduct } from '@/services/ProductService';
+import { unlistProduct, listProduct } from '@/services/ProductService';
 import EditProduct from './EditProduct';
 
-export default function Product({ KeyIndex, ProdInfo, client, salesLocationId }) {
+export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, onAction }) {
 
     const [productImages, setProductImages] = useState('');
     
@@ -30,23 +30,35 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId })
         }
     }
 
-    //TODO: add later when RLS is decided on - which users should be able to unlist products?
     const executeUnlistProduct = async () => {
         console.log('Unlisting product:', ProdInfo)
         try {
             const response = await unlistProduct(client, ProdInfo.id);
+            onAction()
         }
         catch (error) {
             console.error('Error unlisting product:', error.message);
         }
     }
 
+    const executeListProduct = async () => {
+        console.log('Listing product:', ProdInfo)
+        try {
+            const response = await listProduct(client, ProdInfo.id);
+            onAction()
+        }
+        catch (error) {
+            console.error('Error listing product:', error.message);
+        }
+    }
+
     useEffect(() => {
+
         fetchProductImages();
     }, []);
 
     return (
-        <div key={KeyIndex} className={styles.productItemContainer}>
+        <div key={KeyIndex} className={`${styles.productItemContainer} ${ProdInfo.unlisted_at ? styles.unlisted : ''}`}>
             {
                 productImages && productImages.map((image, index) => (
                     <Image
@@ -62,8 +74,11 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId })
             <p><b>Pris:</b> {ProdInfo.price} kr</p>
             <p><b>Beskrivelse:</b> {ProdInfo.product_description}</p>
             <p><b>Antall:</b> {ProdInfo.quantity === -1 ? 'Ubegrenset': ProdInfo.quantity + ' stk'}</p>
+            {ProdInfo.unlisted_at != null&& <p><b>Annonse skjult: </b> {ProdInfo.unlisted_at} </p>}
+
             <div className={styles.buttonContainer}>
-                <button className={styles.productButton} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>
+                {ProdInfo.unlisted_at != null && <button className={styles.productButtonList} onClick={() => executeListProduct()}>Gjenopprett produktannonse</button>}
+                {ProdInfo.unlisted_at == null && <button className={styles.productButtonUnlist} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>}
                 <EditProduct product={ProdInfo} client={client} salesLocationId={salesLocationId} productImages={productImages} />
             </div>
         </div>
