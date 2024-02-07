@@ -61,7 +61,10 @@ export default function Product({ KeyIndex, ProdInfo, client }) {
             <p><b>Pris:</b> {ProdInfo.price} kr</p>
             <p><b>Beskrivelse:</b> {ProdInfo.product_description}</p>
             <p><b>Antall:</b> {ProdInfo.quantity === -1 ? 'Ubegrenset': ProdInfo.quantity + ' stk'}</p>
-            <button className={styles.unlistButton} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>
+            <div className={styles.buttonContainer}>
+                <button className={styles.productButton} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>
+                <button className={styles.productButton}>Rediger produkt</button>
+            </div>
         </div>
     );
 }
