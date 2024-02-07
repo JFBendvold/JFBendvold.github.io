@@ -4,6 +4,8 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, Modal } from 'antd';
 import { fetchProducts, fetchProductAmount, searchProducts } from '@/services/ProductService';
+import { fetchEstablishmentsIds } from '@/services/EstablishmentService';
+import { fetchLocationsByEstablishmentId } from '@/services/LocationService';
 import Product from './Product';
 
 export default function ProductList() {
@@ -17,23 +19,31 @@ export default function ProductList() {
     const [upperBound, setUpperBound] = useState(1);
 
     const fetchLocations = async () => {
-        const { data: EstablishmentsIds, error1 } = await supabase.from("Establishments").select("id")
+        try {
+            const establishmentIds = await fetchEstablishmentsIds(supabase)
 
-        const { data, error } = await supabase.from("Sales_locations").select("*").eq("establishment_id", EstablishmentsIds[0].id)
-        if (data && data.length > 0) {
-            setLocationList(data);
-            if(data[0].id){
-                setSelectedLocationId(data[0].id);
+            const locations = await fetchLocationsByEstablishmentId(supabase, establishmentIds[0].id)
+        
+        if (locations && locations.length > 0) {
+            setLocationList(locations);
+            if(locations[0].id){
+                setSelectedLocationId(locations[0].id);
             } 
-        } else if (error) {
-            console.error('Error fetching locations:', error.message);
         }
-        else if (error1) {
-            console.error('Error fetching establishments:', error1.message);
+        }
+        catch (error) {
+            console.error('Error fetching:', error.message);
         }
     }
 
+    const test = async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        console.log(user) 
+    }
+
     useEffect(() => {
+        console.log('Fetching user')
+        test()
         fetchLocations()
     }, [])
 

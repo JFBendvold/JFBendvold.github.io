@@ -1,3 +1,5 @@
+//TODO: add rls to ensure that users can only create products for their own location
+
 export async function createProduct(client, salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId) {
     const { data: CreatedProduct, error } = await client
     .from('Products')
@@ -24,7 +26,7 @@ export async function fetchProducts(client, location_id, lowerBound, upperBound)
     .select('*')
     .order('updated_at', { ascending: false })
     .range(lowerBound, upperBound)
-    .eq('Sales_location_id', location_id)
+    .eq('sales_location_id', location_id)
 
     if (error) throw error
 
@@ -38,7 +40,7 @@ export async function fetchProductAmount(client, search, location_id)
         const { data: Count, error } = await client
         .from('Products')
         .select('id', { count: 'exact' })
-        .eq('Sales_location_id', location_id)
+        .eq('sales_location_id', location_id)
         .ilike('product_name', `%${search}%`)
 
         if (error) throw error
@@ -49,7 +51,7 @@ export async function fetchProductAmount(client, search, location_id)
         const { data: Count, error } = await client
       .from('Products')
       .select('id', { count: 'exact' })
-      .eq('Sales_location_id', location_id)
+      .eq('sales_location_id', location_id)
 
         if (error) throw error
 
@@ -71,15 +73,22 @@ export async function fetchUserIdFromProductId(client, productId) {
     return UserId
 }
 
-export async function unlistProduct(client, productId) {
-    let { data, error } = await client
-    .rpc('set_product_unlisted_at', {
-      p_product_id: productId
-    })
-  if (error) throw error
+export async function unlistProduct(client, productId) { //TODO: make this work
+//     let { data, error } = await client
+//     .rpc('set_product_unlisted_at', {
+//       p_product_id: productId
+//     })
+//   if (error) throw error
 
-  console.log("DATA")
-  console.log(data)
+//   console.log("DATA")
+//   console.log(data)
+
+    let { data, error } = await client
+    .from('Products')
+    .update({ unlisted_at: 'NOW()' })
+    .eq('id', productId);
+    if (error) throw error;
+    console.log("Direct Update Data:", data);
 
   return data;
 }
@@ -91,7 +100,7 @@ export async function searchProducts(client, searchKeyword, location_id, lowerBo
     .select('*')
     .order('updated_at', { ascending: false })
     .range(lowerBound, upperBound)
-    .eq('Sales_location_id', location_id)
+    .eq('sales_location_id', location_id)
     .ilike('product_name', `%${searchKeyword}%`)
 
     if (error) throw error
