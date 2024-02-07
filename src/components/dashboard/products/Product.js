@@ -79,7 +79,7 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, o
             <div className={styles.buttonContainer}>
                 {ProdInfo.unlisted_at != null && <button className={styles.productButtonList} onClick={() => executeListProduct()}>Gjenopprett produktannonse</button>}
                 {ProdInfo.unlisted_at == null && <button className={styles.productButtonUnlist} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>}
-                <EditProduct product={ProdInfo} client={client} salesLocationId={salesLocationId} productImages={productImages} />
+                <EditProduct product={ProdInfo} client={client} salesLocationId={salesLocationId} productImages={productImages} onAction={onAction}/>
             </div>
         </div>
     );

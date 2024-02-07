@@ -91,7 +91,7 @@ export default function ProductList() {
         }
     }
 
-    const handleChildAction = async () => {
+    const handleChildRefresh = async () => {
         await fetchAllProducts()
     };
 
@@ -127,7 +127,7 @@ export default function ProductList() {
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
-                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId} onAction={handleChildAction}/>
+                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId} onAction={handleChildRefresh}/>
                     ))}
                 </div>
             )}
