@@ -5,7 +5,7 @@ import { getImageByUrl, fetchImagesUrls } from '@/services/ImageService';
 import { unlistProduct, listProduct } from '@/services/ProductService';
 import EditProduct from './EditProduct';
 
-export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, onAction }) {
+export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, emitRefresh }) {
 
     const [productImages, setProductImages] = useState('');
     
@@ -34,7 +34,7 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, o
         console.log('Unlisting product:', ProdInfo)
         try {
             const response = await unlistProduct(client, ProdInfo.id);
-            onAction()
+            emitRefresh()
         }
         catch (error) {
             console.error('Error unlisting product:', error.message);
@@ -45,7 +45,7 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, o
         console.log('Listing product:', ProdInfo)
         try {
             const response = await listProduct(client, ProdInfo.id);
-            onAction()
+            emitRefresh()
         }
         catch (error) {
             console.error('Error listing product:', error.message);
@@ -79,7 +79,7 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, o
             <div className={styles.buttonContainer}>
                 {ProdInfo.unlisted_at != null && <button className={styles.productButtonList} onClick={() => executeListProduct()}>Gjenopprett produktannonse</button>}
                 {ProdInfo.unlisted_at == null && <button className={styles.productButtonUnlist} onClick={() => executeUnlistProduct()}>Skjul produktannonse</button>}
-                <EditProduct product={ProdInfo} client={client} salesLocationId={salesLocationId} productImages={productImages} onAction={onAction}/>
+                <EditProduct product={ProdInfo} client={client} salesLocationId={salesLocationId} productImages={productImages} emitRefresh={emitRefresh}/>
             </div>
         </div>
     );

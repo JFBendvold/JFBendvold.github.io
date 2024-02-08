@@ -9,7 +9,7 @@ import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
 import { postImage, postImageUrl } from '@/services/ImageService'
 import { getUserId } from '@/services/UserService';
-export default function AddProduct({salesLocationId}) {
+export default function AddProduct({salesLocationId, emitRefresh}) {
     const supabase = useSupabaseClient();
 
     const [loading, setLoading] = useState(false);
@@ -139,7 +139,8 @@ export default function AddProduct({salesLocationId}) {
                 if (response) {
                     openNotificationSuccess("Produktet ble lagt til", "Produktet ble lagt til i databasen")
                     resetForm()
-                    setOpen(false);
+                    setOpen(false)
+                    emitRefresh()
                 }
 
             }

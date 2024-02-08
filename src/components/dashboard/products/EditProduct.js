@@ -9,7 +9,7 @@ import { postImage, postImageUrl, deleteImage, deleteImageUrl, fetchImagesUrls  
 import { getUserId } from '@/services/UserService'
 import { updateProduct } from '@/services/ProductService'
 
-export default function EditProduct({product, client, productImages, onAction}) {
+export default function EditProduct({product, client, productImages, emitRefresh}) {
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
@@ -179,7 +179,7 @@ export default function EditProduct({product, client, productImages, onAction}) 
                 }
             }
             setOpen(false)
-            onAction()
+            emitRefresh()
  
         }
         catch(error) {

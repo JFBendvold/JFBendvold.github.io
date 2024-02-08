@@ -6,6 +6,7 @@ import { fetchProducts, fetchProductAmount, searchProducts } from '@/services/Pr
 import { fetchEstablishmentsIds } from '@/services/EstablishmentService';
 import { fetchLocationsByEstablishmentId } from '@/services/LocationService';
 import Product from './Product';
+import AddProduct from './AddProduct';
 
 export default function ProductList() {
     const supabase = useSupabaseClient();
@@ -127,10 +128,11 @@ export default function ProductList() {
             {products.length > 0 && !loading && (
                 <div className={styles.productList}>
                     {products.map((product, index) => (
-                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId} onAction={handleChildRefresh}/>
+                        <Product key={index} KeyIndex={index} ProdInfo={product} client={supabase} salesLocationId={selectedLocationId} emitRefresh={handleChildRefresh}/>
                     ))}
                 </div>
             )}
+            <AddProduct salesLocationId={`${selectedLocationId}`} emitRefresh={handleChildRefresh}/>
         </div>
     );
 }

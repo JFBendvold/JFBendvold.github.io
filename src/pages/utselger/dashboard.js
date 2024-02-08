@@ -7,7 +7,6 @@ import { Spin, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import ProductList from '@/components/dashboard/products/ProductList';
-import AddProduct from '@/components/dashboard/products/AddProduct';
 
 // Gets the auth session from Supabase
 const fetchSession = async (client) => {
@@ -202,8 +201,7 @@ export default function Dashboard() {
                     </div>
                 ) : nav === 'products' ? (
                     <div className={styles.content}>
-                        <ProductList />
-                        <AddProduct salesLocationId={`${selectedSalesLocation}`}/>
+                        <ProductList/>
                     </div>
                 ) : nav === 'employees' ? (
                     <div className={styles.content}>
