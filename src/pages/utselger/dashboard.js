@@ -201,7 +201,7 @@ export default function Dashboard() {
                     </div>
                 ) : nav === 'products' ? (
                     <div className={styles.content}>
-                        <ProductList/>
+                        <ProductList salesLocationId={selectedSalesLocation}/>
                     </div>
                 ) : nav === 'employees' ? (
                     <div className={styles.content}>

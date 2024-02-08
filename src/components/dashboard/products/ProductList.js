@@ -3,41 +3,20 @@ import { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Spin } from 'antd';
 import { fetchProducts, fetchProductAmount, searchProducts } from '@/services/ProductService';
-import { fetchEstablishmentsIds } from '@/services/EstablishmentService';
-import { fetchLocationsByEstablishmentId } from '@/services/LocationService';
 import Product from './Product';
 import AddProduct from './AddProduct';
 
-export default function ProductList() {
+export default function ProductList({salesLocationId}) {
     const supabase = useSupabaseClient();
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
     const [products, setProducts] = useState([]);
-    const [locationList, setLocationList] = useState([]);
     const [selectedLocationId, setSelectedLocationId] = useState("");
     const [currentLower, setCurrentLower] = useState(0);
     const [upperBound, setUpperBound] = useState(1);
 
-    const fetchLocations = async () => {
-        try {
-            const establishmentIds = await fetchEstablishmentsIds(supabase)
-
-            const locations = await fetchLocationsByEstablishmentId(supabase, establishmentIds[0].id)
-        
-        if (locations && locations.length > 0) {
-            setLocationList(locations);
-            if(locations[0].id){
-                setSelectedLocationId(locations[0].id);
-            } 
-        }
-        }
-        catch (error) {
-            console.error('Error fetching:', error.message);
-        }
-    }
-
     useEffect(() => {
-        fetchLocations()
+        setSelectedLocationId(salesLocationId)
     }, [])
 
     const nextPage = () => {
@@ -96,24 +75,20 @@ export default function ProductList() {
         await fetchAllProducts()
     };
 
+
+    //Re-fetches the current items when 
     useEffect(() => {
         fetchAllProducts()
     }, [selectedLocationId, upperBound, currentLower, search])
 
+    //Resets the current lower bound when the location is changed
+    useEffect(() => {
+        setCurrentLower(0)
+    }, [selectedLocationId])
 
     return (
         <div className={styles.productContainer}>
             <h1>Registrerte produkter</h1>
-            {locationList.length > 0 && (
-                <div>
-                    <label htmlFor="location">Velg utsalgssted</label>
-                    <select name="location" id="location" onChange={(e) => setSelectedLocationId(e.target.value)}>
-                        {locationList.map((location, index) => (
-                            <option key={index} value={location.id}>{location.sales_location_name}</option>
-                        ))}
-                    </select>
-                </div>
-            )}
             <div>
                 <label htmlFor="search">Søk opp produkt</label>
                 <input type="text" id="search" name="search" onChange={(e) => searchForProducts(e.target.value)} />
