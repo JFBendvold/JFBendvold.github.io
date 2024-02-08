@@ -1,45 +1,62 @@
-import styles from '@/styles/components/dashboard/AddProduct.module.css';
+import styles from '@/styles/components/dashboard/EditProduct.module.css';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { openNotificationError, openNotificationSuccess } from '@/utils/Notifications';
 import { Spin, TreeSelect } from 'antd';
 import { formatToTreeData } from '@/utils/CategoryHandler'
-import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
-import { postImage, postImageUrl } from '@/services/ImageService'
-import { getUserId } from '@/services/UserService';
-export default function AddProduct({salesLocationId, emitRefresh}) {
-    const supabase = useSupabaseClient();
+import { postImage, postImageUrl, deleteImage, deleteImageUrl, fetchImagesUrls  } from '@/services/ImageService'
+import { getUserId } from '@/services/UserService'
+import { updateProduct } from '@/services/ProductService'
+
+export default function EditProduct({product, client, productImages, emitRefresh}) {
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    // Form data
     const [productName, setProductName] = useState('');
-    const [productDescription, setProductDescription] = useState(''); // Can be empty
+    const [productDescription, setProductDescription] = useState(''); 
     const [productPrice, setProductPrice] = useState('');
-    const [productStock, setProductStock] = useState(''); // -1 = unlimited
+    const [productStock, setProductStock] = useState(''); 
     const [productCategoryId, setProductCategoryId] = useState('');
     const [uploadedImages, setUploadedImages] = useState([]);
     const [mappedTree, setMappedTree] = useState([]);
     const [imageDisplay, setImageDisplay] = useState([]);
+    const [shouldRemoveImage, setShouldRemoveImage] = useState(false);
+    const [originalImageUrls, setOriginalImageUrls] = useState([]);
 
     // Open add product panel
-    async function openAddProductPanel() {
+    async function openEditProductPanel() {
         setLoading(true);
-        resetForm();
+        setForm();
+        try {
+            const imageUrls = await fetchImagesUrls(client, product.id);
+            console.log(imageUrls)
+            if (imageUrls && imageUrls.length > 0) {
+                setOriginalImageUrls(imageUrls);
+                console.log(imageUrls[0].url)
+            }
+            else {
+                openNotificationError("Produktet mangler bilde", "Bildene kunne ikke hentes")
+            }
+        }
+        catch (error) {
+            console.error('Error fetching product image:', error.message);
+            openNotificationError("Noe gikk galt", "Bildene kunne ikke hentes for produktet")
+        }
         setOpen(true);
         setLoading(false);
     }
 
-    function resetForm() {
-        setProductName('');
-        setProductDescription('');
-        setProductPrice('');
-        setProductStock('');
-        setProductCategoryId('');
+    function setForm() {
+        console.log(product)
+        setProductName(product.product_name);
+        setProductDescription(product.product_description);
+        setProductPrice(product.price);
+        setProductStock(product.quantity);
+        setProductCategoryId(product.category_id);
         setUploadedImages([]);
-        setImageDisplay([]);
+        setImageDisplay(productImages);
+        
     }
 
     // Handle upload image
@@ -49,6 +66,7 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
             const imageFile = e.target.files[0];
             setUploadedImages([...uploadedImages, imageFile])
             setImageDisplay([...imageDisplay, URL.createObjectURL(imageFile)])
+            setShouldRemoveImage(true)
             }
             catch(error) {
                 openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
@@ -66,6 +84,7 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
         newImageDisplay.splice(index, 1)
         setUploadedImages([...newImages])
         setImageDisplay([...newImageDisplay])
+        setShouldRemoveImage(true)
     }
 
     // Handle price change
@@ -92,11 +111,11 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
 
     async function setFetchedCategories() {
         try {
-            let fetchedCategories = await fetchCategories(supabase)
+            let fetchedCategories = await fetchCategories(client)
             let count = 0
             while (count < 4)
             {
-                fetchedCategories = await fetchCategories(supabase)
+                fetchedCategories = await fetchCategories(client)
                 if (fetchedCategories && fetchedCategories.length > 0) {
                     break;
                 }
@@ -116,34 +135,52 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
 
     }
 
-    async function addProduct() {
-        try{
-            if(uploadedImages.length < 1) {
+    async function removeImageFromProduct() {
+        try {
+            const response = await deleteImage(client, originalImageUrls[0].url)
 
-                openNotificationError("Bilde mangler", "Du må laste opp et bilde for å legge til et produkt")
-                return;
-            }
-            const productId = await createProduct(supabase,
-                salesLocationId, productName, productDescription, productPrice, productStock, productCategoryId
+            const response2 = await deleteImageUrl(client, product.id)
+        }
+        catch(error) {
+            console.log(error)
+            openNotificationError("Noe gikk galt", "Bildet ble ikke fjernet fra produktet")
+        }
+    }
+
+    async function executeUpdateProduct() {
+        try{
+
+            //client, productId, productName, productDescription, productPrice, productStock, productCategoryId
+
+            const productId = await updateProduct(client, product.id,
+                productName, productDescription, productPrice, productStock, productCategoryId
                 )
 
-            for(let i = 0; i < uploadedImages.length; i++) {
-                const image = uploadedImages[i]
-  
-                const userId = await getUserId(supabase)
-                const imageId = await postImageUrl(supabase, userId, productId)
-            
-                
-                const response = await postImage(supabase, image, imageId, userId)
-
-                if (response) {
-                    openNotificationSuccess("Produktet ble lagt til", "Produktet ble lagt til i databasen")
-                    resetForm()
-                    setOpen(false)
-                    emitRefresh()
-                }
-
+            if(shouldRemoveImage) {
+                await removeImageFromProduct()
             }
+
+
+            if(uploadedImages.length > 0) {
+
+                for(let i = 0; i < uploadedImages.length; i++) {
+                    const image = uploadedImages[i]
+      
+                    const userId = await getUserId(client)
+                    const imageId = await postImageUrl(client, userId, productId)
+                
+                    
+                    const response = await postImage(client, image, imageId, userId)
+    
+                    if (response) {
+                        openNotificationSuccess("Produktet ble endret", "Produktet ble oppdatert i databasen")
+                    }
+    
+                }
+            }
+            setOpen(false)
+            emitRefresh()
+ 
         }
         catch(error) {
             console.log(error)
@@ -175,10 +212,20 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
             return;
         }
 
+        if(productCategoryId === product.category_id && 
+            productName === product.product_name && 
+            productDescription === product.product_description && 
+            productPrice === product.price && 
+            productStock === product.quantity && 
+            !shouldRemoveImage) {
+            openNotificationError("Ingen endringer", "Du må gjøre endringer for å oppdatere produktet")
+            return;
+        }
+
         setLoading(true);
 
         try {
-            await addProduct()
+            await executeUpdateProduct()
         }
         catch (error) {
             openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
@@ -189,16 +236,14 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
 
     return (
         <div className={styles.container}>
-            <button className={styles.addButton} onClick={openAddProductPanel}>
-                <span className="material-symbols-outlined">
-                    add
-                </span>
+            <button className={styles.editButton} onClick={openEditProductPanel}>
+                Endre produkt
             </button>
             <div className={`${styles.panel} ${open ? styles.open : ''}`}>
                 <span className={`${styles.closeButton} material-symbols-outlined`} onClick={() => setOpen(false)}>
                     close
                 </span>
-                <h1 className={styles.title}>Legg til et nytt produkt</h1>
+                <h1 className={styles.title}>Endre produkt</h1>
                 <div className={styles.form}>
                     <div className={styles.left}>
                         <div className={styles.imageUploadContainer}>
@@ -267,7 +312,7 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
                         </div>
                         <div className={styles.inputContainer}>
                             <button className={styles.submitButton} onClick={handleSubmit}>
-                                Legg til produkt
+                                Oppdater produkt
                             </button>
                         </div>
                     </div>

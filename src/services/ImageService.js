@@ -6,6 +6,27 @@ export async function postImage(client, image, imageId, userId){ //TODO: COMMMEN
     return UploadedImage
 }
 
+export async function deleteImage(client, url) {
+    const { data, error } = await client
+        .storage
+        .from('imgs')
+        .remove([url])
+
+    if (error) throw error
+    return data
+}
+
+export async function deleteImageUrl(client, productId) {
+    const { error } = await client
+    .from('Images')
+    .delete()
+    .eq('parent_id', productId)
+
+    if (error) throw error
+
+    return true;
+}
+
 export async function getImage(client, imageId, userId) {
     const { data: Image, error } = await client.storage.from('imgs').getPublicUrl(userId + "/" + imageId)
 
