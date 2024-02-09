@@ -1,0 +1,11 @@
+.locationContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem;
+    border: 2px solid #eee;
+    border-radius: 10px;
+}

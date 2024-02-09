@@ -70,7 +70,7 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, e
                     />
                 ))
             }
-            <p><b>Produktnavn:</b> {ProdInfo.product_name}</p>
+            <h2>{ProdInfo.product_name}</h2>
             <p><b>Pris:</b> {ProdInfo.price} kr</p>
             <p><b>Beskrivelse:</b> {ProdInfo.product_description}</p>
             <p><b>Antall:</b> {ProdInfo.quantity === -1 ? 'Ubegrenset': ProdInfo.quantity + ' stk'}</p>
