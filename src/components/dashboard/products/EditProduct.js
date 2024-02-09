@@ -63,7 +63,8 @@ export default function EditProduct({product, client, productImages, emitRefresh
     async function handleUploadImage(e)  {
         if(uploadedImages.length < 1) {
             try {
-            const imageFile = e.target.files[0];
+            const imageFile = e.target.files[0]
+            console.log(imageFile)
             setUploadedImages([...uploadedImages, imageFile])
             setImageDisplay([...imageDisplay, URL.createObjectURL(imageFile)])
             setShouldRemoveImage(true)
@@ -185,7 +186,7 @@ export default function EditProduct({product, client, productImages, emitRefresh
         }
         catch(error) {
             console.log(error)
-            openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
+            openNotificationError("Noe gikk galt", "Produktet ble ikke oppdatert i databasen")
         }
     }
 

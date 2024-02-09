@@ -53,7 +53,6 @@ export default function Product({ KeyIndex, ProdInfo, client, salesLocationId, e
     }
 
     useEffect(() => {
-
         fetchProductImages();
     }, []);
 

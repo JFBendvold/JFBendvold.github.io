@@ -29,6 +29,10 @@ export default function LocationList({salesLocationId}) {
         }
     }
 
+    const handleChildRefresh = () => {
+        fetchSelectedLocation()
+    }
+
     useEffect(() => {
         fetchSelectedLocation()
     }, [])
@@ -37,7 +41,7 @@ export default function LocationList({salesLocationId}) {
         <div className={styles.locationListContainer}>
             <h1>Registrerte utsalgssteder</h1>
 
-            {location && <Location KeyIndex={0} LocationInfo={location} client={supabase} /> }
+            {location && <Location KeyIndex={0} LocationInfo={location} client={supabase} emitRefresh={handleChildRefresh}/> }
             {loading && <Spin />}
 
         </div>

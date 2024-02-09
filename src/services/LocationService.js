@@ -13,3 +13,25 @@ export async function fetchLocationById(client, locationId) {
 
     return Location
 }
+
+/*
+name 
+description
+address
+zipcode
+tlf
+long
+lat
+type_id
+*/
+export async function updateLocation(client, newLocationInfo) {
+    const { data: UpdatedLocation, error } = await client
+    .from('Sales_locations')
+    .update(newLocationInfo)
+    .eq('id', newLocationInfo.id)
+    .select()
+
+    if (error) throw error
+
+    return UpdatedLocation[0].id
+}

@@ -1,35 +1,72 @@
 import styles from '@/styles/components/dashboard/Location.module.css'
-/**
-     * id: "aa61b0be-e3e7-4554-be01-da917d92808c", created_at: "2024-01-31T08:41:57.883244+00:00", establishment_id: "53ff602d-e84f-42c1-911f-152d9bdfb36e", sales_location_description: "Dette er hyggelig", type_id: "ec605a2b-0dec-469e-9a7d-c645da6fb212", sales_location_name: "Gårdsutsalg av brunost", pending: 0, address: "Vollabakken 9 A", zip_code: 7030, lat: 63.4232594, … }
-​
-address: "Vollabakken 9 A"
-​
-created_at: "2024-01-31T08:41:57.883244+00:00"
-​
-establishment_id: "53ff602d-e84f-42c1-911f-152d9bdfb36e"
-​
-id: "aa61b0be-e3e7-4554-be01-da917d92808c"
-​
-lat: 63.4232594
-​
-lng: 10.4008389
-​
-pending: 0
-​
-sales_location_description: "Dette er hyggelig"
-​
-sales_location_name: "Gårdsutsalg av brunost"
-​
-sales_location_tlf: 48388283
-​
-type_id: "ec605a2b-0dec-469e-9a7d-c645da6fb212"
-​
-zip_code: 7030
-     */
+import EditLocation from './EditLocation'
+import { useEffect, useState } from 'react'
+import { getImageByUrl, fetchImagesUrls } from '@/services/ImageService'
+import Image from 'next/image'
 
-export default function Location({ KeyIndex, LocationInfo}) {
+export default function Location({ KeyIndex, LocationInfo, client, emitRefresh}) {
+
+    const [status, setStatus] = useState(null)
+    
+    const [locationImages, setLocationImages] = useState('')
+
+    const fetchLocationImages = async () => {
+        try {
+            let imagesUrlsFetched = await fetchImagesUrls(client, LocationInfo.id)
+            console.log('Images fetched:', imagesUrlsFetched)
+
+            if (imagesUrlsFetched && imagesUrlsFetched.length > 0) {
+                let urls = []
+                for (let i = 0; i < imagesUrlsFetched.length; i++) {
+                    urls.push(await getImageByUrl(client, imagesUrlsFetched[i].url))
+                }
+
+                if (urls.length > 0) {
+                    setLocationImages(urls)
+                    console.log('Location images:', locationImages)
+                }
+                
+            }
+        }
+        catch (error) {
+            console.error('Error fetching location image:', error.message);
+        }
+    }
+
+    useEffect(() => {
+        const pendingStatus = LocationInfo.pending
+        if (pendingStatus === 1) {
+            setStatus('Verifisert utsalg')
+        }
+        else if(pendingStatus === 2) {
+            setStatus('Ikke verifisert utsalg')
+        }
+        else {
+            setStatus('Venter på verifisering')
+        }
+        try {
+            fetchLocationImages();
+        }
+        catch (error) {
+            console.error('Error fetching location image:', error.message);
+        }
+    }, [])
+
+    useEffect(() => {
+        fetchLocationImages();
+    }, [LocationInfo])
+
     return (
         <div key={KeyIndex} className={styles.locationContainer}>
+            {locationImages && locationImages.map((image, index) => (
+                <Image
+                    key={index}
+                    src={image}
+                    alt="Produktbilde"
+                    width={100}
+                    height={100}
+                />
+            ))}
             <h2>{LocationInfo.sales_location_name}</h2>
             <p><b>Beskrivelse: </b>{LocationInfo.sales_location_description}</p>
             <p><b>Adresse: </b>{LocationInfo.address}</p>
@@ -38,6 +75,9 @@ export default function Location({ KeyIndex, LocationInfo}) {
             <p><b>Lengdegrad: </b>{LocationInfo.lng}</p>
             <p><b>Breddegrad: </b>{LocationInfo.lat}</p>
             <p><b>Opprettet: </b>{LocationInfo.created_at}</p>
+            {status && <p><b>Status: </b> {status}</p>}
+
+            <EditLocation location={LocationInfo} locationImages={locationImages} client={client} emitRefresh={emitRefresh}/>
         </div>
     );
 }
