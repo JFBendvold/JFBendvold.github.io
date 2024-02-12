@@ -63,7 +63,8 @@ export default function EditProduct({product, client, productImages, emitRefresh
     async function handleUploadImage(e)  {
         if(uploadedImages.length < 1) {
             try {
-            const imageFile = e.target.files[0];
+            const imageFile = e.target.files[0]
+            console.log(imageFile)
             setUploadedImages([...uploadedImages, imageFile])
             setImageDisplay([...imageDisplay, URL.createObjectURL(imageFile)])
             setShouldRemoveImage(true)
@@ -135,23 +136,31 @@ export default function EditProduct({product, client, productImages, emitRefresh
 
     }
 
-    async function removeImageFromProduct() {
+    async function removeImageFromProduct() { //TODO: loop when there are allowed multiple images
+        let hadOriginalImage = true;
         try {
-            const response = await deleteImage(client, originalImageUrls[0].url)
+            if(originalImageUrls.length === 0) {
+                hadOriginalImage = false;
+            }
+            else {
+                await deleteImage(client, originalImageUrls[0].url)
 
-            const response2 = await deleteImageUrl(client, product.id)
+                await deleteImageUrl(client, product.id)
+            }
         }
         catch(error) {
             console.log(error)
-            openNotificationError("Noe gikk galt", "Bildet ble ikke fjernet fra produktet")
+            if(hadOriginalImage) {
+                openNotificationError("Noe gikk galt", "Bildet ble ikke fjernet fra produktet")
+            }
+            else {
+                console.log("Produktet hadde ikke bilde fra før, men det ble lagt til et nå.")
+            }
         }
     }
 
     async function executeUpdateProduct() {
         try{
-
-            //client, productId, productName, productDescription, productPrice, productStock, productCategoryId
-
             const productId = await updateProduct(client, product.id,
                 productName, productDescription, productPrice, productStock, productCategoryId
                 )
@@ -165,26 +174,19 @@ export default function EditProduct({product, client, productImages, emitRefresh
 
                 for(let i = 0; i < uploadedImages.length; i++) {
                     const image = uploadedImages[i]
-      
                     const userId = await getUserId(client)
                     const imageId = await postImageUrl(client, userId, productId)
-                
-                    
                     const response = await postImage(client, image, imageId, userId)
-    
-                    if (response) {
-                        openNotificationSuccess("Produktet ble endret", "Produktet ble oppdatert i databasen")
-                    }
-    
                 }
             }
             setOpen(false)
+            openNotificationSuccess("Produktet ble endret", "Produktet ble oppdatert i databasen")
             emitRefresh()
  
         }
         catch(error) {
             console.log(error)
-            openNotificationError("Noe gikk galt", "Produktet ble ikke lagt til i databasen")
+            openNotificationError("Noe gikk galt", "Produktet ble ikke oppdatert i databasen")
         }
     }
 

@@ -1,4 +1,5 @@
-Lokal - Informasjonsnettside og søknadskanar for utselgere
+# Lokal
+Repository for informasjonsnettside og søknadskanal for utselgere
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 

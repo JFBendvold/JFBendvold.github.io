@@ -8,7 +8,8 @@ import { formatToTreeData } from '@/utils/CategoryHandler'
 import { createProduct } from '@/services/ProductService'
 import { fetchCategories } from '@/services/CategoryService'
 import { postImage, postImageUrl } from '@/services/ImageService'
-import { getUserId } from '@/services/UserService';
+import { getUserId } from '@/services/UserService'
+
 export default function AddProduct({salesLocationId, emitRefresh}) {
     const supabase = useSupabaseClient();
 
@@ -46,9 +47,11 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
     async function handleUploadImage(e)  {
         if(uploadedImages.length < 1) {
             try {
-            const imageFile = e.target.files[0];
-            setUploadedImages([...uploadedImages, imageFile])
-            setImageDisplay([...imageDisplay, URL.createObjectURL(imageFile)])
+                const file = e.target.files[0];
+                const imageFile = e.target.files[0];
+                const imageURL = URL.createObjectURL(imageFile);
+                setUploadedImages([...uploadedImages, imageFile])
+                setImageDisplay([...imageDisplay, imageURL])
             }
             catch(error) {
                 openNotificationError("Noe gikk galt", "Bildene ble ikke lastet opp")
@@ -132,8 +135,7 @@ export default function AddProduct({salesLocationId, emitRefresh}) {
   
                 const userId = await getUserId(supabase)
                 const imageId = await postImageUrl(supabase, userId, productId)
-            
-                
+
                 const response = await postImage(supabase, image, imageId, userId)
 
                 if (response) {
