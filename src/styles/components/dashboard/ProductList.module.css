@@ -8,8 +8,7 @@
     width: 100%;
     border: 2px solid #eee;
     border-radius: 10px;
-    overflow: hidden;
-
+    overflow-y: scroll;
 }
 
 .productContainer h1 {
@@ -50,11 +49,9 @@
 
 }
 
-
 .productContainer select {
     transition: background-color 0.2s ease-in-out;
 }
-
 
 .productContainer select:hover {
     background-color: #F5CAC3;
@@ -71,8 +68,6 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 1rem;
-    max-height: 63.5vh;
     overflow-y: auto; 
 }
 
@@ -82,7 +77,6 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 1rem;
     margin: 1rem;
     border: 2px solid #eee;
     border-radius: 10px;
