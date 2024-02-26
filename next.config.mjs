@@ -26,7 +26,8 @@ const nextConfig = {
         "rc-picker",
         "rc-util",
         "rc-tree",
-        "rc-tooltip"
+        "rc-tooltip",
+        "@babel/runtime",
 
     ]
 };
