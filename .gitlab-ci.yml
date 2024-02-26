@@ -86,3 +86,4 @@ deploy_to_github_pages:
         name: github-pages
     only:
         - deploy
+        - 136-fix-gh-pages
